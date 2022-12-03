@@ -1,7 +1,7 @@
 name: shape_builder
-description: A new Flutter package project.
+description: Create the shape you want, decorate it the way you want and put it where you wantn
 version: 0.0.1
-homepage:
+homepage: https://github.com/GIfatahTH/shape_builder
 
 environment:
   sdk: '>=2.18.2 <3.0.0'
