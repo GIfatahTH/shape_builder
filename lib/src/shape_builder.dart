@@ -20,6 +20,7 @@ class ShapeBuilder {
   final PaintStyle? paintStyle;
 
   final Clip clipBehavior;
+  final bool clipShrink;
   final bool isOverlay;
   ShapeBuilder({
     required this.color,
@@ -27,6 +28,7 @@ class ShapeBuilder {
     required this.child,
     required this.shadow,
     required this.clipBehavior,
+    required this.clipShrink,
     required this.isOverlay,
     required this.paintStyle,
   });
@@ -83,6 +85,7 @@ class ShapeBuilder {
       boxShadow: shadow,
       color: color,
       clipBehavior: clipBehavior,
+      clipShrink: clipShrink,
       isOverlay: isOverlay,
       paintStyle: paintStyle,
       child: child,
@@ -96,6 +99,7 @@ class ShapeBuilder {
       boxShadow: shadow,
       color: color,
       clipBehavior: clipBehavior,
+      clipShrink: clipShrink,
       isOverlay: isOverlay,
       paintStyle: paintStyle,
       child: child,
@@ -118,20 +122,29 @@ class ShapeBuilder {
       alignment: alignment,
       color: color,
       clipBehavior: clipBehavior,
+      clipShrink: clipShrink,
       isOverlay: isOverlay,
       paintStyle: paintStyle,
       child: child,
     );
   }
 
-  RRectangle buildRSquare({BorderRadiusGeometry? borderRadius, double? side}) {
+  RRectangle buildRSquare({
+    BorderRadiusGeometry? borderRadius,
+    double? side,
+    BorderRadiusGeometry? outerHBorderRadius,
+    BorderRadiusGeometry? outerVBorderRadius,
+  }) {
     return RRectangle.square(
       borderRadius: borderRadius,
+      outerHBorderRadius: outerHBorderRadius,
+      outerVBorderRadius: outerVBorderRadius,
       side: side,
       boxShadow: shadow,
       alignment: alignment,
       color: color,
       clipBehavior: clipBehavior,
+      clipShrink: clipShrink,
       isOverlay: isOverlay,
       paintStyle: paintStyle,
       child: child,
@@ -146,6 +159,7 @@ class ShapeBuilder {
       boxShadow: shadow,
       color: color,
       clipBehavior: clipBehavior,
+      clipShrink: clipShrink,
       isOverlay: isOverlay,
       paintStyle: paintStyle,
       child: child,
@@ -169,6 +183,7 @@ class ShapeBuilder {
       alignment: alignment,
       color: color,
       clipBehavior: clipBehavior,
+      clipShrink: clipShrink,
       isOverlay: isOverlay,
       paintStyle: paintStyle,
       child: child,
@@ -190,6 +205,7 @@ class ShapeBuilder {
       alignment: alignment,
       color: color,
       clipBehavior: clipBehavior,
+      clipShrink: clipShrink,
       isOverlay: isOverlay,
       paintStyle: paintStyle,
       child: child,
@@ -207,6 +223,7 @@ extension ShapeBuilderX on Widget {
     AlignmentGeometry? alignment,
     List<BoxShadow> boxShadow = const [],
     Clip clipBehavior = Clip.none,
+    bool clipShrink = true,
     PaintStyle? paintStyle,
   }) {
     return ShapeBuilder(
@@ -215,6 +232,7 @@ extension ShapeBuilderX on Widget {
       color: color,
       child: this,
       clipBehavior: clipBehavior,
+      clipShrink: clipShrink,
       paintStyle: paintStyle,
       isOverlay: true,
     );
@@ -228,17 +246,19 @@ extension ShapeBuilderX on Widget {
     Color? color,
     AlignmentGeometry? alignment,
     double elevation = 0.0,
-    List<BoxShadow> shadow = const [],
+    List<BoxShadow> boxShadow = const [],
     Color? shadowColor,
     Clip clipBehavior = Clip.none,
+    bool clipShrink = true,
     PaintStyle? paintStyle,
   }) {
     return ShapeBuilder(
-      shadow: shadow,
+      shadow: boxShadow,
       alignment: alignment ?? Alignment.center,
       color: color,
       child: this,
       clipBehavior: clipBehavior,
+      clipShrink: clipShrink,
       isOverlay: false,
       paintStyle: paintStyle,
     );

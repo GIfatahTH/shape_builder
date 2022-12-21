@@ -6,10 +6,11 @@ class _BaseSingleChildRenderObjectShape extends SingleChildRenderObjectWidget {
 
   final List<BoxShadow> shadow;
   final Clip clipBehavior;
+  final bool clipShrink;
   final bool isOverlay;
   final AlignmentGeometry alignment;
   final DecorationImage? decorationImage = null;
-  final bool isTightConstraint;
+  final Size? imageSize;
   final PaintStyle? paintStyle;
   _BaseSingleChildRenderObjectShape({
     required this.color,
@@ -19,14 +20,38 @@ class _BaseSingleChildRenderObjectShape extends SingleChildRenderObjectWidget {
     required this.shadow,
     required this.isOverlay,
     required this.clipBehavior,
+    required this.clipShrink,
     required this.alignment,
     required this.paintStyle,
     required Widget? child,
     required super.key,
-  })  : isTightConstraint = child is Image && clipBehavior != Clip.none,
+  })  : imageSize = child is Image && clipBehavior != Clip.none
+            ? Size((child).width ?? -1, child.height ?? -1)
+            : null,
         super(
           child: child is Image
-              ? child
+              ? Image(
+                  image: child.image,
+                  alignment: alignment,
+                  centerSlice: child.centerSlice,
+                  color: child.color,
+                  colorBlendMode: child.colorBlendMode,
+                  errorBuilder: child.errorBuilder,
+                  excludeFromSemantics: child.excludeFromSemantics,
+                  filterQuality: child.filterQuality,
+                  fit: child.fit,
+                  frameBuilder: child.frameBuilder,
+                  gaplessPlayback: child.gaplessPlayback,
+                  height: child.height,
+                  isAntiAlias: child.isAntiAlias,
+                  key: child.key,
+                  loadingBuilder: child.loadingBuilder,
+                  matchTextDirection: child.matchTextDirection,
+                  opacity: child.opacity,
+                  repeat: child.repeat,
+                  semanticLabel: child.semanticLabel,
+                  width: child.width,
+                )
               : child != null
                   ? Align(
                       widthFactor: 1,
@@ -44,11 +69,12 @@ class _BaseSingleChildRenderObjectShape extends SingleChildRenderObjectWidget {
       ..width = width
       ..height = height
       ..clipBehavior = clipBehavior
+      ..clipShrink = clipShrink
       ..isOverlay = isOverlay
       ..boxShadow = shadow
       ..decorationImage = decorationImage
       ..alignment = alignment
-      ..isTightConstraint = isTightConstraint
+      ..imageSize = imageSize
       ..paintStyle = paintStyle;
   }
 
@@ -59,6 +85,7 @@ class _BaseSingleChildRenderObjectShape extends SingleChildRenderObjectWidget {
     properties.add(DiagnosticsProperty<double?>('width', width));
     properties.add(DiagnosticsProperty<double?>('height', height));
     properties.add(DiagnosticsProperty<List<BoxShadow>>('shadow', shadow));
+    properties.add(DiagnosticsProperty<bool>('clipShrink', clipShrink));
     properties.add(DiagnosticsProperty<Clip>('clipBehavior', clipBehavior));
     properties
         .add(DiagnosticsProperty<AlignmentGeometry>('alignment', alignment));

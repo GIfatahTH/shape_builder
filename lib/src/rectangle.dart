@@ -10,6 +10,7 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
     super.shadow = const [],
     super.isOverlay = false,
     super.clipBehavior = Clip.none,
+    super.clipShrink = true,
     super.alignment = Alignment.center,
     required super.paintStyle,
     super.key,
@@ -29,6 +30,7 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
     bool isOverlay = true,
     //
     Clip clipBehavior = Clip.none,
+    bool clipShrink = true,
     Key? key,
   }) =>
       Rectangle._(
@@ -39,6 +41,7 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
         height: side,
         squareSide: side ?? -1,
         clipBehavior: clipBehavior,
+        clipShrink: clipShrink,
         isOverlay: !isOverlay,
         alignment: alignment,
         paintStyle: paintStyle,
@@ -127,6 +130,7 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
     bool isOverlay = true,
     //
     Clip clipBehavior = Clip.none,
+    bool clipShrink = true,
     Key? key,
   }) {
     return Rectangle._(
@@ -136,6 +140,7 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
       width: width,
       height: height,
       clipBehavior: clipBehavior,
+      clipShrink: clipShrink,
       isOverlay: !isOverlay,
       alignment: alignment,
       paintStyle: paintStyle,
@@ -153,10 +158,11 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
       squareSide: squareSide,
       buildContext: context,
       clipBehavior: clipBehavior,
+      clipShrink: clipShrink,
       isOverlay: isOverlay,
       alignment: alignment,
       decorationImage: decorationImage,
-      isTightConstraint: isTightConstraint,
+      imageSize: imageSize,
       paintStyle: paintStyle,
     );
   }
@@ -182,11 +188,12 @@ class _RenderRectangle extends _BaseRenderShape {
     required super.color,
     required super.boxShadow,
     required super.clipBehavior,
+    required super.clipShrink,
     required super.buildContext,
     required super.isOverlay,
     required super.alignment,
     required super.decorationImage,
-    required super.isTightConstraint,
+    required super.imageSize,
     required super.paintStyle,
   });
 

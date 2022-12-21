@@ -13,6 +13,7 @@ class Oval extends _BaseSingleChildRenderObjectShape {
     super.shadow = const [],
     super.isOverlay = true,
     super.clipBehavior = Clip.none,
+    super.clipShrink = true,
     super.alignment = Alignment.center,
     required super.paintStyle,
     required this.shouldClosePath,
@@ -31,6 +32,7 @@ class Oval extends _BaseSingleChildRenderObjectShape {
     Widget? child,
     AlignmentGeometry alignment = Alignment.center,
     Clip clipBehavior = Clip.none,
+    bool clipShrink = true,
     bool isOverlay = true,
     PaintStyle? paintStyle,
     Key? key,
@@ -48,6 +50,7 @@ class Oval extends _BaseSingleChildRenderObjectShape {
 
       shadow: boxShadow,
       clipBehavior: clipBehavior,
+      clipShrink: clipShrink,
       isOverlay: !isOverlay,
       alignment: alignment, paintStyle: paintStyle,
       child: child,
@@ -63,6 +66,7 @@ class Oval extends _BaseSingleChildRenderObjectShape {
     List<BoxShadow> boxShadow = const [],
     Widget? child,
     Clip clipBehavior = Clip.none,
+    bool clipShrink = true,
     AlignmentGeometry alignment = Alignment.center,
     bool isOverlay = true,
     PaintStyle? paintStyle,
@@ -79,6 +83,7 @@ class Oval extends _BaseSingleChildRenderObjectShape {
       shouldClosePath: shouldClosePathToCenter,
       shadow: boxShadow,
       clipBehavior: clipBehavior,
+      clipShrink: clipShrink,
       isOverlay: !isOverlay,
       alignment: alignment,
       paintStyle: paintStyle,
@@ -100,11 +105,12 @@ class Oval extends _BaseSingleChildRenderObjectShape {
       boxShadow: shadow,
       buildContext: context,
       clipBehavior: clipBehavior,
+      clipShrink: clipShrink,
       isOverlay: isOverlay,
       shouldClosePath: shouldClosePath,
       alignment: alignment,
       decorationImage: decorationImage,
-      isTightConstraint: isTightConstraint,
+      imageSize: imageSize,
       paintStyle: paintStyle,
     );
   }
@@ -139,11 +145,12 @@ class _RenderCircle extends _BaseRenderShape {
     required super.color,
     required super.boxShadow,
     required super.clipBehavior,
+    required super.clipShrink,
     required super.buildContext,
     required super.isOverlay,
     required super.alignment,
     required super.decorationImage,
-    required super.isTightConstraint,
+    required super.imageSize,
     required super.paintStyle,
   })  : _startAngle = startAngle,
         _swipeAngle = swipeAngle,
@@ -184,7 +191,9 @@ class _RenderCircle extends _BaseRenderShape {
 
   @override
   Rect? getCircleToPaint(Rect rect) {
-    if (_swipeAngle != null && _swipeAngle! < 2 * pi) {
+    final start = (_startAngle ?? 0) - pi / 2;
+    final swipe = _swipeAngle ?? (2 * pi - (_startAngle ?? 0));
+    if ((swipe - start) < 2 * pi) {
       return null;
     }
     if (_squareSide != null) {
@@ -196,15 +205,17 @@ class _RenderCircle extends _BaseRenderShape {
 
   @override
   Path? getPathToPaint(Rect rect, Offset offset, bool shouldClosePath) {
-    if (_swipeAngle == null || _swipeAngle! >= 2 * pi) {
+    final start = (_startAngle ?? 0) - pi / 2;
+    final swipe = _swipeAngle ?? (2 * pi - (_startAngle ?? 0));
+    if ((swipe - start) >= 2 * pi) {
       return null;
     }
 
     final path = Path();
     path.addArc(
       rect,
-      _startAngle ?? -pi / 2,
-      _swipeAngle ?? 2 * pi,
+      start,
+      swipe,
     );
     if (_shouldClosePath != null) {
       if (_shouldClosePath!) {

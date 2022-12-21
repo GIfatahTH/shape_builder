@@ -12,7 +12,7 @@ void main() {
     'rectangle',
     () {
       testGoldens(
-        'Expands to take the max available space if both height and width'
+        '1- Expands to take the max available space if both height and width'
         'are not specified and the child is null',
         (tester) async {
           await tester.pumpWidgetBuilder(
@@ -26,7 +26,7 @@ void main() {
         },
       );
       testGoldens(
-        'Takes the width is specified',
+        '2- Takes the width is specified',
         (tester) async {
           await tester.pumpWidgetBuilder(
             Center(
@@ -45,7 +45,7 @@ void main() {
       );
 
       testGoldens(
-        'Takes the height is specified',
+        '3- Takes the height is specified',
         (tester) async {
           await tester.pumpWidgetBuilder(
             Center(
@@ -64,7 +64,7 @@ void main() {
         },
       );
       testGoldens(
-        'Takes the both width and height are specified',
+        '4- Takes the both width and height are specified',
         (tester) async {
           await tester.pumpWidgetBuilder(
             Center(
@@ -83,17 +83,18 @@ void main() {
           await screenMatchesGolden(tester, 'rectangle/rectangle_004');
         },
       );
-
       testGoldens(
-        'Takes the  child specified',
+        '5- Takes the  child specified',
         (tester) async {
           await tester.pumpWidgetBuilder(
             Center(
-              child: Rectangle(
-                color: ColorWithGradient(
-                    const RadialGradient(colors: [Colors.red, Colors.blue])),
-                child: const Text('Hi this is me'),
-              ),
+              child: const Text('Hi this is me')
+                  .background(
+                    color: ColorWithGradient(
+                      const RadialGradient(colors: [Colors.red, Colors.blue]),
+                    ),
+                  )
+                  .buildRect(),
             ),
             wrapper: materialAppWrapper(
               theme: ThemeData.light(),
@@ -105,16 +106,18 @@ void main() {
       );
 
       testGoldens(
-        'the  child, width and height are specified',
+        '6- the  child, width and height are specified',
         (tester) async {
           await tester.pumpWidgetBuilder(
             Center(
-              child: Rectangle(
-                width: 100,
-                height: 100,
-                boxShadow: BoxShadowWithElevation(5, color: Colors.red),
-                child: const Text('Hi this is me'),
-              ),
+              child: const Text('Hi this is me')
+                  .background(
+                    boxShadow: BoxShadowWithElevation(5, color: Colors.red),
+                  )
+                  .buildRect(
+                    width: 100,
+                    height: 100,
+                  ),
             ),
             wrapper: materialAppWrapper(
               theme: ThemeData.light(),
@@ -126,15 +129,14 @@ void main() {
       );
 
       testGoldens(
-        'the  child, with Sized box',
+        '7- the  child, with Sized box',
         (tester) async {
           await tester.pumpWidgetBuilder(
             Center(
               child: SizedBox(
                 width: 100,
                 height: 100,
-                child: Rectangle(
-                  child: const Text('Hi this is me'),
+                child: const Text('Hi this is me').background(
                   boxShadow: const [
                     BoxShadow(
                       offset: Offset(4, 4),
@@ -142,7 +144,7 @@ void main() {
                       blurRadius: 3,
                     )
                   ],
-                ),
+                ).buildRect(),
               ),
             ),
             wrapper: materialAppWrapper(
@@ -155,15 +157,17 @@ void main() {
       );
 
       testGoldens(
-        'with  child, with width double. infinity',
+        '8- with  child, with width double. infinity',
         (tester) async {
           await tester.pumpWidgetBuilder(
             Center(
-              child: Rectangle(
-                width: double.infinity,
-                alignment: Alignment.centerRight,
-                child: const Text('Hi this is me'),
-              ),
+              child: const Text('Hi this is me')
+                  .background(
+                    alignment: Alignment.centerRight,
+                  )
+                  .buildRect(
+                    width: double.infinity,
+                  ),
             ),
             wrapper: materialAppWrapper(
               theme: ThemeData.light(),
@@ -174,16 +178,17 @@ void main() {
         },
       );
       testGoldens(
-        'with  child, with height double. infinity',
+        '9- with  child, with height double. infinity',
         (tester) async {
           await tester.pumpWidgetBuilder(
             Center(
-              child: Rectangle(
-                height: double.infinity,
-                alignment: Alignment.bottomCenter,
-                child: const Text('Hi this is me'),
-              ),
-            ),
+                child: const Text('Hi this is me')
+                    .background(
+                      alignment: Alignment.bottomCenter,
+                    )
+                    .buildRect(
+                      height: double.infinity,
+                    )),
             wrapper: materialAppWrapper(
               theme: ThemeData.light(),
               platform: TargetPlatform.android,
@@ -193,16 +198,18 @@ void main() {
         },
       );
       testGoldens(
-        'with  child, with width and height = double. infinity',
+        '10- with  child, with width and height = double. infinity',
         (tester) async {
           await tester.pumpWidgetBuilder(
             Center(
-              child: Rectangle(
-                width: double.infinity,
-                height: double.infinity,
-                alignment: Alignment.bottomRight,
-                child: const Text('Hi this is me'),
-              ),
+              child: const Text('Hi this is me')
+                  .background(
+                    alignment: Alignment.bottomRight,
+                  )
+                  .buildRect(
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
             ),
             wrapper: materialAppWrapper(
               theme: ThemeData.light(),
@@ -214,23 +221,24 @@ void main() {
       );
 
       testGoldens(
-        ' with paintStyle',
+        '11- with paintStyle',
         (tester) async {
           await tester.pumpWidgetBuilder(
             Center(
-              child: Rectangle(
-                width: 200,
-                height: 200,
-                paintStyle: PaintStyle(
-                  style: PaintingStyle.stroke,
-                  strokeWidth: 10,
-                  strokeJoin: StrokeJoin.round,
-                  strokeCap: StrokeCap.square,
-                  strokeMiterLimit: 20,
-                ),
-                child: const Text('Hi this is me'),
-              ),
-            ),
+                child: const Text('Hi this is me')
+                    .background(
+                      paintStyle: PaintStyle(
+                        style: PaintingStyle.stroke,
+                        strokeWidth: 10,
+                        strokeJoin: StrokeJoin.round,
+                        strokeCap: StrokeCap.square,
+                        strokeMiterLimit: 20,
+                      ),
+                    )
+                    .buildRect(
+                      width: 200,
+                      height: 200,
+                    )),
             wrapper: materialAppWrapper(
               theme: ThemeData.light(),
               platform: TargetPlatform.android,
@@ -241,60 +249,78 @@ void main() {
       );
 
       testGoldens(
-        ' with clipBehavior',
+        '12- with clipBehavior',
         (tester) async {
           await tester.pumpWidgetBuilder(
             Center(
               child: Column(
                 children: [
                   const Text('1 12 123 1234'),
-                  Rectangle(
-                    width: 100,
-                    height: 50,
-                    alignment: Alignment.centerLeft,
-                    clipBehavior: Clip.antiAlias,
-                    child: const Text('1 12 123 1234'),
-                  ).colorize(Colors.amber),
-                  Rectangle(
-                    width: 100,
-                    height: 50,
-                    alignment: Alignment.center,
-                    clipShrink: true,
-                    clipBehavior: Clip.antiAlias,
-                    child: const Text('1 12 123 1234'),
-                  ).colorize(Colors.amber),
-                  Rectangle(
-                    width: 100,
-                    height: 50,
-                    alignment: Alignment.centerRight,
-                    clipShrink: true,
-                    clipBehavior: Clip.antiAlias,
-                    child: const Text('1 12 123 1234'),
-                  ).colorize(Colors.amber),
-                  Rectangle(
-                    width: 100,
-                    height: 50,
-                    alignment: Alignment.centerLeft,
-                    clipBehavior: Clip.antiAlias,
-                    clipShrink: false,
-                    child: const Text('1 12 123 1234'),
-                  ).colorize(Colors.amber),
-                  Rectangle(
-                    width: 100,
-                    height: 50,
-                    alignment: Alignment.center,
-                    clipShrink: false,
-                    clipBehavior: Clip.antiAlias,
-                    child: const Text('1 12 123 1234'),
-                  ).colorize(Colors.amber),
-                  Rectangle(
-                    width: 100,
-                    height: 50,
-                    alignment: Alignment.centerRight,
-                    clipShrink: false,
-                    clipBehavior: Clip.antiAlias,
-                    child: const Text('1 12 123 1234'),
-                  ).colorize(Colors.amber),
+                  const Text('1 12 123 1234')
+                      .background(
+                        alignment: Alignment.centerLeft,
+                        clipBehavior: Clip.antiAlias,
+                      )
+                      .buildRect(
+                        width: 100,
+                        height: 50,
+                      )
+                      .colorize(Colors.amber),
+                  const Text('1 12 123 1234')
+                      .background(
+                        alignment: Alignment.center,
+                        clipShrink: true,
+                        clipBehavior: Clip.antiAlias,
+                      )
+                      .buildRect(
+                        width: 100,
+                        height: 50,
+                      )
+                      .colorize(Colors.amber),
+                  const Text('1 12 123 1234')
+                      .background(
+                        alignment: Alignment.centerRight,
+                        clipShrink: true,
+                        clipBehavior: Clip.antiAlias,
+                      )
+                      .buildRect(
+                        width: 100,
+                        height: 50,
+                      )
+                      .colorize(Colors.amber),
+                  const Text('1 12 123 1234')
+                      .background(
+                        alignment: Alignment.centerLeft,
+                        clipBehavior: Clip.antiAlias,
+                        clipShrink: false,
+                      )
+                      .buildRect(
+                        width: 100,
+                        height: 50,
+                      )
+                      .colorize(Colors.amber),
+                  const Text('1 12 123 1234')
+                      .background(
+                        alignment: Alignment.center,
+                        clipShrink: false,
+                        clipBehavior: Clip.antiAlias,
+                      )
+                      .buildRect(
+                        width: 100,
+                        height: 50,
+                      )
+                      .colorize(Colors.amber),
+                  const Text('1 12 123 1234')
+                      .background(
+                        alignment: Alignment.centerRight,
+                        clipShrink: false,
+                        clipBehavior: Clip.antiAlias,
+                      )
+                      .buildRect(
+                        width: 100,
+                        height: 50,
+                      )
+                      .colorize(Colors.amber)
                 ],
               ),
             ),
@@ -324,140 +350,170 @@ void main() {
                     height: 100,
                   ),
                   const SizedBox(height: 8),
-                  Rectangle(
-                    width: 100,
-                    height: 50,
-                    alignment: Alignment.topLeft,
-                    clipBehavior: Clip.antiAlias,
-                    child: Image.memory(
-                      data,
-                      fit: BoxFit.cover,
-                    ),
-                  ).colorize(Colors.amber),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Rectangle(
-                        width: 100,
-                        height: 50,
+                  Image.memory(
+                    data,
+                    fit: BoxFit.cover,
+                  )
+                      .background(
                         alignment: Alignment.topLeft,
                         clipBehavior: Clip.antiAlias,
-                        child: Image.memory(
-                          data,
-                          fit: BoxFit.cover,
-                          width: 200,
-                          height: 100,
-                        ),
-                      ).colorize(Colors.amber),
-                      Rectangle(
+                      )
+                      .buildRect(
                         width: 100,
                         height: 50,
-                        alignment: Alignment.topCenter,
-                        clipBehavior: Clip.hardEdge,
-                        child: Image.memory(
-                          data,
-                          fit: BoxFit.cover,
-                          width: 200,
-                          height: 100,
-                        ),
-                      ).colorize(Colors.amber),
-                      Rectangle(
-                        width: 100,
-                        height: 50,
-                        alignment: Alignment.topRight,
-                        clipBehavior: Clip.hardEdge,
-                        child: Image.memory(
-                          data,
-                          fit: BoxFit.cover,
-                          width: 200,
-                          height: 100,
-                        ),
-                      ).colorize(Colors.amber),
+                      )
+                      .colorize(Colors.amber),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.memory(
+                        data,
+                        fit: BoxFit.cover,
+                        width: 200,
+                        height: 100,
+                      )
+                          .background(
+                            alignment: Alignment.topLeft,
+                            clipBehavior: Clip.antiAlias,
+                          )
+                          .buildRect(
+                            width: 100,
+                            height: 50,
+                          )
+                          .colorize(Colors.amber),
+                      Image.memory(
+                        data,
+                        fit: BoxFit.cover,
+                        width: 200,
+                        height: 100,
+                      )
+                          .background(
+                            alignment: Alignment.topCenter,
+                            clipBehavior: Clip.hardEdge,
+                          )
+                          .buildRect(
+                            width: 100,
+                            height: 50,
+                          )
+                          .colorize(Colors.amber),
+                      Image.memory(
+                        data,
+                        fit: BoxFit.cover,
+                        width: 200,
+                        height: 100,
+                      )
+                          .background(
+                            alignment: Alignment.topRight,
+                            clipBehavior: Clip.hardEdge,
+                          )
+                          .buildRect(
+                            width: 100,
+                            height: 50,
+                          )
+                          .colorize(Colors.amber),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Rectangle(
-                        width: 100,
-                        height: 50,
-                        alignment: Alignment.centerLeft,
-                        clipBehavior: Clip.antiAlias,
-                        child: Image.memory(
-                          data,
-                          fit: BoxFit.cover,
-                          width: 200,
-                          height: 100,
-                        ),
-                      ).colorize(Colors.amber),
-                      Rectangle(
-                        width: 100,
-                        height: 50,
-                        alignment: Alignment.center,
-                        clipBehavior: Clip.hardEdge,
-                        child: Image.memory(
-                          data,
-                          fit: BoxFit.cover,
-                          width: 200,
-                          height: 100,
-                        ),
-                      ).colorize(Colors.amber),
-                      Rectangle(
-                        width: 100,
-                        height: 50,
-                        alignment: Alignment.centerRight,
-                        clipBehavior: Clip.hardEdge,
-                        child: Image.memory(
-                          data,
-                          fit: BoxFit.cover,
-                          width: 200,
-                          height: 100,
-                        ),
-                      ).colorize(Colors.amber),
+                      Image.memory(
+                        data,
+                        fit: BoxFit.cover,
+                        width: 200,
+                        height: 100,
+                      )
+                          .background(
+                            alignment: Alignment.centerLeft,
+                            clipBehavior: Clip.antiAlias,
+                          )
+                          .buildRect(
+                            width: 100,
+                            height: 50,
+                          )
+                          .colorize(Colors.amber),
+                      Image.memory(
+                        data,
+                        fit: BoxFit.cover,
+                        width: 200,
+                        height: 100,
+                      )
+                          .background(
+                            alignment: Alignment.center,
+                            clipBehavior: Clip.hardEdge,
+                          )
+                          .buildRect(
+                            width: 100,
+                            height: 50,
+                          )
+                          .colorize(Colors.amber),
+                      Image.memory(
+                        data,
+                        fit: BoxFit.cover,
+                        width: 200,
+                        height: 100,
+                      )
+                          .background(
+                            alignment: Alignment.centerRight,
+                            clipBehavior: Clip.hardEdge,
+                          )
+                          .buildRect(
+                            width: 100,
+                            height: 50,
+                          )
+                          .colorize(Colors.amber),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Rectangle(
-                        width: 100,
-                        height: 50,
-                        alignment: Alignment.bottomLeft,
-                        clipBehavior: Clip.antiAlias,
-                        child: Image.memory(
-                          data,
-                          fit: BoxFit.cover,
-                          width: 200,
-                          height: 100,
-                        ),
-                      ).colorize(Colors.amber),
-                      Rectangle(
-                        width: 100,
-                        height: 50,
-                        alignment: Alignment.bottomCenter,
-                        clipBehavior: Clip.hardEdge,
-                        child: Image.memory(
-                          data,
-                          fit: BoxFit.cover,
-                          width: 200,
-                          height: 100,
-                        ),
-                      ).colorize(Colors.amber),
-                      Rectangle(
-                        width: 100,
-                        height: 50,
-                        alignment: Alignment.bottomRight,
-                        clipBehavior: Clip.hardEdge,
-                        child: Image.memory(
-                          data,
-                          fit: BoxFit.cover,
-                          width: 200,
-                          height: 100,
-                        ),
-                      ).colorize(Colors.amber),
+                      Image.memory(
+                        data,
+                        fit: BoxFit.cover,
+                        width: 200,
+                        height: 100,
+                      )
+                          .background(
+                            alignment: Alignment.bottomLeft,
+                            clipBehavior: Clip.antiAlias,
+                          )
+                          .buildRect(
+                            width: 100,
+                            height: 50,
+                          )
+                          .colorize(Colors.amber),
+                      Image.memory(
+                        data,
+                        fit: BoxFit.cover,
+                        width: 200,
+                        height: 100,
+                      )
+                          .background(
+                            alignment: Alignment.bottomCenter,
+                            clipBehavior: Clip.hardEdge,
+                          )
+                          .buildRect(
+                            width: 100,
+                            height: 50,
+                          )
+                          .colorize(Colors.amber),
+                      Image.memory(
+                        data,
+                        fit: BoxFit.cover,
+                        width: 200,
+                        height: 100,
+                      )
+                          .background(
+                            alignment: Alignment.bottomRight,
+                            clipBehavior: Clip.hardEdge,
+                          )
+                          .buildRect(
+                            width: 100,
+                            height: 50,
+                          )
+                          .colorize(Colors.amber),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -491,68 +547,80 @@ void main() {
                     height: 100,
                   ),
                   const SizedBox(height: 8),
-                  Rectangle(
-                    width: 100,
-                    height: 80,
-                    alignment: Alignment.center,
-                    clipBehavior: Clip.antiAlias,
-                    child: Image.memory(
-                      data,
-                      fit: BoxFit.cover,
-                      width: 200,
-                      height: 100,
-                    ),
-                  ).colorize(Colors.amber),
+                  Image.memory(
+                    data,
+                    fit: BoxFit.cover,
+                    width: 200,
+                    height: 100,
+                  )
+                      .background(
+                        alignment: Alignment.center,
+                        clipBehavior: Clip.antiAlias,
+                      )
+                      .buildRect(
+                        width: 100,
+                        height: 80,
+                      )
+                      .colorize(Colors.amber),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
                         width: 200,
                         height: 100,
-                        child: Rectangle(
-                          width: 100,
-                          height: 80,
-                          alignment: Alignment.center,
-                          clipBehavior: Clip.antiAlias,
-                          child: Image.memory(
-                            data,
-                            fit: BoxFit.cover,
-                            width: 200,
-                            height: 100,
-                          ),
-                        ).colorize(Colors.amber),
+                        child: Image.memory(
+                          data,
+                          fit: BoxFit.cover,
+                          width: 200,
+                          height: 100,
+                        )
+                            .background(
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.antiAlias,
+                            )
+                            .buildRect(
+                              width: 100,
+                              height: 80,
+                            )
+                            .colorize(Colors.amber),
                       ),
                       SizedBox(
                         width: 150,
                         height: 90,
-                        child: Rectangle(
-                          width: 100,
-                          height: 80,
-                          alignment: Alignment.center,
-                          clipBehavior: Clip.antiAlias,
-                          child: Image.memory(
-                            data,
-                            fit: BoxFit.cover,
-                            width: 200,
-                            height: 100,
-                          ),
-                        ).colorize(Colors.amber),
+                        child: Image.memory(
+                          data,
+                          fit: BoxFit.cover,
+                          width: 200,
+                          height: 100,
+                        )
+                            .background(
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.antiAlias,
+                            )
+                            .buildRect(
+                              width: 100,
+                              height: 80,
+                            )
+                            .colorize(Colors.amber),
                       ),
                       SizedBox(
                         width: 100 * .8,
                         height: 80 * .8,
-                        child: Rectangle(
-                          width: 100,
-                          height: 80,
-                          alignment: Alignment.center,
-                          clipBehavior: Clip.antiAlias,
-                          child: Image.memory(
-                            data,
-                            fit: BoxFit.cover,
-                            width: 200,
-                            height: 100,
-                          ),
-                        ).colorize(Colors.amber),
+                        child: Image.memory(
+                          data,
+                          fit: BoxFit.cover,
+                          width: 200,
+                          height: 100,
+                        )
+                            .background(
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.antiAlias,
+                            )
+                            .buildRect(
+                              width: 100,
+                              height: 80,
+                            )
+                            .colorize(Colors.amber),
                       ),
                     ],
                   ),
@@ -565,54 +633,63 @@ void main() {
                           maxWidth: 200,
                           maxHeight: 100,
                         ),
-                        child: Rectangle(
-                          width: 100,
-                          height: 80,
-                          alignment: Alignment.center,
-                          clipBehavior: Clip.antiAlias,
-                          child: Image.memory(
-                            data,
-                            fit: BoxFit.cover,
-                            width: 200,
-                            height: 100,
-                          ),
-                        ).colorize(Colors.amber),
+                        child: Image.memory(
+                          data,
+                          fit: BoxFit.cover,
+                          width: 200,
+                          height: 100,
+                        )
+                            .background(
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.antiAlias,
+                            )
+                            .buildRect(
+                              width: 100,
+                              height: 80,
+                            )
+                            .colorize(Colors.amber),
                       ),
                       ConstrainedBox(
                         constraints: const BoxConstraints(
                           maxWidth: 150,
                           maxHeight: 90,
                         ),
-                        child: Rectangle(
-                          width: 100,
-                          height: 80,
-                          alignment: Alignment.center,
-                          clipBehavior: Clip.antiAlias,
-                          child: Image.memory(
-                            data,
-                            fit: BoxFit.cover,
-                            width: 200,
-                            height: 100,
-                          ),
-                        ).colorize(Colors.amber),
+                        child: Image.memory(
+                          data,
+                          fit: BoxFit.cover,
+                          width: 200,
+                          height: 100,
+                        )
+                            .background(
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.antiAlias,
+                            )
+                            .buildRect(
+                              width: 100,
+                              height: 80,
+                            )
+                            .colorize(Colors.amber),
                       ),
                       ConstrainedBox(
                         constraints: const BoxConstraints(
                           maxWidth: 100 * .8,
                           maxHeight: 80 * .8,
                         ),
-                        child: Rectangle(
-                          width: 100,
-                          height: 80,
-                          alignment: Alignment.center,
-                          clipBehavior: Clip.antiAlias,
-                          child: Image.memory(
-                            data,
-                            fit: BoxFit.cover,
-                            width: 200,
-                            height: 100,
-                          ),
-                        ).colorize(Colors.amber),
+                        child: Image.memory(
+                          data,
+                          fit: BoxFit.cover,
+                          width: 200,
+                          height: 100,
+                        )
+                            .background(
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.antiAlias,
+                            )
+                            .buildRect(
+                              width: 100,
+                              height: 80,
+                            )
+                            .colorize(Colors.amber),
                       ),
                     ],
                   ),
@@ -625,48 +702,55 @@ void main() {
                           maxWidth: 200,
                           maxHeight: 100,
                         ),
-                        child: Rectangle(
-                          width: 100,
-                          height: 80,
-                          alignment: Alignment.center,
-                          clipBehavior: Clip.antiAlias,
-                          child: Image.memory(
-                            data,
-                            fit: BoxFit.cover,
-                          ),
-                        ).colorize(Colors.amber),
+                        child: Image.memory(
+                          data,
+                          fit: BoxFit.cover,
+                        )
+                            .background(
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.antiAlias,
+                            )
+                            .buildRect(
+                              width: 100,
+                              height: 80,
+                            )
+                            .colorize(Colors.amber),
                       ),
                       ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          maxWidth: 150,
-                          maxHeight: 90,
-                        ),
-                        child: Rectangle(
-                          width: 100,
-                          height: 80,
-                          alignment: Alignment.center,
-                          clipBehavior: Clip.antiAlias,
+                          constraints: const BoxConstraints(
+                            maxWidth: 150,
+                            maxHeight: 90,
+                          ),
                           child: Image.memory(
                             data,
                             fit: BoxFit.cover,
-                          ),
-                        ).colorize(Colors.amber),
-                      ),
+                          )
+                              .background(
+                                alignment: Alignment.center,
+                                clipBehavior: Clip.antiAlias,
+                              )
+                              .buildRect(
+                                width: 100,
+                                height: 80,
+                              )),
                       ConstrainedBox(
                         constraints: const BoxConstraints(
                           maxWidth: 100 * .8,
                           maxHeight: 80 * .8,
                         ),
-                        child: Rectangle(
-                          width: 100,
-                          height: 80,
-                          alignment: Alignment.center,
-                          clipBehavior: Clip.antiAlias,
-                          child: Image.memory(
-                            data,
-                            fit: BoxFit.cover,
-                          ),
-                        ).colorize(Colors.amber),
+                        child: Image.memory(
+                          data,
+                          fit: BoxFit.cover,
+                        )
+                            .background(
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.antiAlias,
+                            )
+                            .buildRect(
+                              width: 100,
+                              height: 80,
+                            )
+                            .colorize(Colors.amber),
                       ),
                     ],
                   ),
@@ -683,20 +767,22 @@ void main() {
       );
 
       testGoldens(
-        ' with clipBehavior and image with both image w and h  and rect w and h are null',
+        '15- with clipBehavior and image with both image w and h  and rect w and h are null',
         (tester) async {
           final file = File(
             path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
           );
           final data = file.readAsBytesSync();
           await tester.pumpWidgetBuilder(
-            Rectangle(
-              clipBehavior: Clip.antiAlias,
-              child: Image.memory(
-                data,
-                fit: BoxFit.cover,
-              ),
-            ).colorize(Colors.amber),
+            Image.memory(
+              data,
+              fit: BoxFit.cover,
+            )
+                .background(
+                  clipBehavior: Clip.antiAlias,
+                )
+                .buildRect()
+                .colorize(Colors.amber),
             wrapper: materialAppWrapper(
               theme: ThemeData.light(),
               platform: TargetPlatform.android,
@@ -707,7 +793,7 @@ void main() {
       );
 
       testGoldens(
-        ' with clipBehavior and image with both image w and h  and rect w and h are null'
+        '16- with clipBehavior and image with both image w and h  and rect w and h are null'
         'Case inside sized box',
         (tester) async {
           final file = File(
@@ -719,13 +805,15 @@ void main() {
               child: SizedBox(
                 width: 400,
                 height: 400,
-                child: Rectangle(
-                  clipBehavior: Clip.antiAlias,
-                  child: Image.memory(
-                    data,
-                    fit: BoxFit.cover,
-                  ),
-                ).colorize(Colors.amber),
+                child: Image.memory(
+                  data,
+                  fit: BoxFit.cover,
+                )
+                    .background(
+                      clipBehavior: Clip.antiAlias,
+                    )
+                    .buildRect()
+                    .colorize(Colors.amber),
               ),
             ),
             wrapper: materialAppWrapper(
@@ -738,7 +826,7 @@ void main() {
       );
 
       testGoldens(
-        ' with clipBehavior and image with both only rect w is given',
+        '17- with clipBehavior and image with both only rect w is given',
         (tester) async {
           final file = File(
             path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
@@ -746,14 +834,17 @@ void main() {
           final data = file.readAsBytesSync();
           await tester.pumpWidgetBuilder(
             Center(
-              child: Rectangle(
-                width: 400,
-                clipBehavior: Clip.antiAlias,
-                child: Image.memory(
-                  data,
-                  fit: BoxFit.cover,
-                ),
-              ).colorize(Colors.amber),
+              child: Image.memory(
+                data,
+                fit: BoxFit.cover,
+              )
+                  .background(
+                    clipBehavior: Clip.antiAlias,
+                  )
+                  .buildRect(
+                    width: 400,
+                  )
+                  .colorize(Colors.amber),
             ),
             wrapper: materialAppWrapper(
               theme: ThemeData.light(),
@@ -764,7 +855,7 @@ void main() {
         },
       );
       testGoldens(
-        ' with clipBehavior and image with both only rect w is given'
+        '18 - with clipBehavior and image with both only rect w is given'
         'With alignment to top left',
         (tester) async {
           final file = File(
@@ -773,15 +864,18 @@ void main() {
           final data = file.readAsBytesSync();
           await tester.pumpWidgetBuilder(
             Center(
-              child: Rectangle(
-                width: 400,
-                clipBehavior: Clip.antiAlias,
-                alignment: Alignment.topLeft,
-                child: Image.memory(
-                  data,
-                  fit: BoxFit.cover,
-                ),
-              ).colorize(Colors.amber),
+              child: Image.memory(
+                data,
+                fit: BoxFit.cover,
+              )
+                  .background(
+                    clipBehavior: Clip.antiAlias,
+                    alignment: Alignment.topLeft,
+                  )
+                  .buildRect(
+                    width: 400,
+                  )
+                  .colorize(Colors.amber),
             ),
             wrapper: materialAppWrapper(
               theme: ThemeData.light(),
@@ -793,7 +887,7 @@ void main() {
       );
 
       testGoldens(
-        ' with clipBehavior and image with both only image w is given',
+        '19- with clipBehavior and image with both only image w is given',
         (tester) async {
           final file = File(
             path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
@@ -801,15 +895,17 @@ void main() {
           final data = file.readAsBytesSync();
           await tester.pumpWidgetBuilder(
             Center(
-              child: Rectangle(
-                clipBehavior: Clip.antiAlias,
-                alignment: Alignment.center,
-                child: Image.memory(
-                  data,
-                  width: 400,
-                  fit: BoxFit.cover,
-                ),
-              ).colorize(Colors.amber),
+              child: Image.memory(
+                data,
+                fit: BoxFit.cover,
+                width: 400,
+              )
+                  .background(
+                    clipBehavior: Clip.antiAlias,
+                    alignment: Alignment.center,
+                  )
+                  .buildRect()
+                  .colorize(Colors.amber),
             ),
             wrapper: materialAppWrapper(
               theme: ThemeData.light(),
@@ -821,7 +917,7 @@ void main() {
       );
 
       testGoldens(
-        ' with clipBehavior and image with both only rect h is given',
+        '20- with clipBehavior and image with both only rect h is given',
         (tester) async {
           final file = File(
             path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
@@ -829,14 +925,17 @@ void main() {
           final data = file.readAsBytesSync();
           await tester.pumpWidgetBuilder(
             Center(
-              child: Rectangle(
-                height: 400,
-                clipBehavior: Clip.antiAlias,
-                child: Image.memory(
-                  data,
-                  fit: BoxFit.cover,
-                ),
-              ).colorize(Colors.amber),
+              child: Image.memory(
+                data,
+                fit: BoxFit.cover,
+              )
+                  .background(
+                    clipBehavior: Clip.antiAlias,
+                  )
+                  .buildRect(
+                    height: 400,
+                  )
+                  .colorize(Colors.amber),
             ),
             wrapper: materialAppWrapper(
               theme: ThemeData.light(),
@@ -856,15 +955,18 @@ void main() {
           final data = file.readAsBytesSync();
           await tester.pumpWidgetBuilder(
             Center(
-              child: Rectangle(
-                clipBehavior: Clip.antiAlias,
-                alignment: Alignment.center,
-                child: Image.memory(
-                  data,
-                  height: 40,
-                  fit: BoxFit.cover,
-                ),
-              ).colorize(Colors.amber),
+              child: Image.memory(
+                data,
+                fit: BoxFit.cover,
+              )
+                  .background(
+                    clipBehavior: Clip.antiAlias,
+                    alignment: Alignment.center,
+                  )
+                  .buildRect(
+                    height: 40,
+                  )
+                  .colorize(Colors.amber),
             ),
             wrapper: materialAppWrapper(
               theme: ThemeData.light(),
@@ -893,38 +995,44 @@ void main() {
                     ),
                     // width: 300,
                     // height: 300,
-                    child: Rectangle(
-                      clipBehavior: Clip.antiAlias,
-                      alignment: Alignment.center,
-                      child: Image.memory(
-                        data,
-                        fit: BoxFit.cover,
-                      ),
-                    ).colorize(Colors.amber),
+                    child: Image.memory(
+                      data,
+                      fit: BoxFit.cover,
+                    )
+                        .background(
+                          clipBehavior: Clip.antiAlias,
+                          alignment: Alignment.center,
+                        )
+                        .buildRect()
+                        .colorize(Colors.amber),
                   ),
                   SizedBox(
                     width: 200,
                     height: 200,
-                    child: Rectangle(
-                      clipBehavior: Clip.antiAlias,
-                      alignment: Alignment.center,
-                      child: Image.memory(
-                        data,
-                        fit: BoxFit.cover,
-                      ),
-                    ).colorize(Colors.amber),
+                    child: Image.memory(
+                      data,
+                      fit: BoxFit.cover,
+                    )
+                        .background(
+                          clipBehavior: Clip.antiAlias,
+                          alignment: Alignment.center,
+                        )
+                        .buildRect()
+                        .colorize(Colors.amber),
                   ),
                   SizedBox(
                     width: 100,
                     height: 100,
-                    child: Rectangle(
-                      clipBehavior: Clip.antiAlias,
-                      alignment: Alignment.center,
-                      child: Image.memory(
-                        data,
-                        fit: BoxFit.cover,
-                      ),
-                    ).colorize(Colors.amber),
+                    child: Image.memory(
+                      data,
+                      fit: BoxFit.cover,
+                    )
+                        .background(
+                          clipBehavior: Clip.antiAlias,
+                          alignment: Alignment.center,
+                        )
+                        .buildRect()
+                        .colorize(Colors.amber),
                   ),
                 ],
               ),
@@ -956,44 +1064,50 @@ void main() {
                     ),
                     // width: 300,
                     // height: 300,
-                    child: Rectangle(
-                      clipBehavior: Clip.antiAlias,
-                      alignment: Alignment.center,
-                      child: Image.memory(
-                        data,
-                        width: 250,
-                        height: 250,
-                        fit: BoxFit.cover,
-                      ),
-                    ).colorize(Colors.amber),
+                    child: Image.memory(
+                      data,
+                      fit: BoxFit.cover,
+                      width: 250,
+                      height: 250,
+                    )
+                        .background(
+                          clipBehavior: Clip.antiAlias,
+                          alignment: Alignment.center,
+                        )
+                        .buildRect()
+                        .colorize(Colors.amber),
                   ),
                   SizedBox(
                     width: 200,
                     height: 200,
-                    child: Rectangle(
-                      clipBehavior: Clip.antiAlias,
-                      alignment: Alignment.center,
-                      child: Image.memory(
-                        data,
-                        fit: BoxFit.cover,
-                        width: 250,
-                        height: 250,
-                      ),
-                    ).colorize(Colors.amber),
+                    child: Image.memory(
+                      data,
+                      fit: BoxFit.cover,
+                      width: 250,
+                      height: 250,
+                    )
+                        .background(
+                          clipBehavior: Clip.antiAlias,
+                          alignment: Alignment.center,
+                        )
+                        .buildRect()
+                        .colorize(Colors.amber),
                   ),
                   SizedBox(
                     width: 100,
                     height: 100,
-                    child: Rectangle(
-                      clipBehavior: Clip.antiAlias,
-                      alignment: Alignment.center,
-                      child: Image.memory(
-                        data,
-                        fit: BoxFit.cover,
-                        width: 250,
-                        height: 250,
-                      ),
-                    ).colorize(Colors.amber),
+                    child: Image.memory(
+                      data,
+                      fit: BoxFit.cover,
+                      width: 250,
+                      height: 250,
+                    )
+                        .background(
+                          clipBehavior: Clip.antiAlias,
+                          alignment: Alignment.center,
+                        )
+                        .buildRect()
+                        .colorize(Colors.amber),
                   ),
                 ],
               ),
@@ -1023,54 +1137,63 @@ void main() {
                       maxWidth: 300,
                       maxHeight: 300,
                     ),
-                    child: Rectangle(
-                      width: 150,
-                      height: 150,
-                      clipBehavior: Clip.antiAlias,
-                      alignment: Alignment.center,
-                      child: Image.memory(
-                        data,
-                        fit: BoxFit.cover,
-                        width: 300,
-                        height: 300,
-                      ),
-                    ).colorize(Colors.amber),
+                    child: Image.memory(
+                      data,
+                      fit: BoxFit.cover,
+                      width: 300,
+                      height: 300,
+                    )
+                        .background(
+                          clipBehavior: Clip.antiAlias,
+                          alignment: Alignment.center,
+                        )
+                        .buildRect(
+                          width: 150,
+                          height: 150,
+                        )
+                        .colorize(Colors.amber),
                   ),
                   ConstrainedBox(
                     constraints: const BoxConstraints(
                       maxWidth: 200,
                       maxHeight: 200,
                     ),
-                    child: Rectangle(
-                      clipBehavior: Clip.antiAlias,
-                      alignment: Alignment.center,
-                      width: 150,
-                      height: 150,
-                      child: Image.memory(
-                        data,
-                        fit: BoxFit.cover,
-                        width: 300,
-                        height: 300,
-                      ),
-                    ).colorize(Colors.amber),
+                    child: Image.memory(
+                      data,
+                      fit: BoxFit.cover,
+                      width: 300,
+                      height: 300,
+                    )
+                        .background(
+                          clipBehavior: Clip.antiAlias,
+                          alignment: Alignment.center,
+                        )
+                        .buildRect(
+                          width: 150,
+                          height: 150,
+                        )
+                        .colorize(Colors.amber),
                   ),
                   ConstrainedBox(
                     constraints: const BoxConstraints(
                       maxWidth: 100,
                       maxHeight: 100,
                     ),
-                    child: Rectangle(
-                      clipBehavior: Clip.antiAlias,
-                      alignment: Alignment.center,
-                      width: 150,
-                      height: 150,
-                      child: Image.memory(
-                        data,
-                        fit: BoxFit.cover,
-                        width: 300,
-                        height: 300,
-                      ),
-                    ).colorize(Colors.amber),
+                    child: Image.memory(
+                      data,
+                      fit: BoxFit.cover,
+                      width: 300,
+                      height: 300,
+                    )
+                        .background(
+                          clipBehavior: Clip.antiAlias,
+                          alignment: Alignment.center,
+                        )
+                        .buildRect(
+                          width: 150,
+                          height: 150,
+                        )
+                        .colorize(Colors.amber),
                   ),
                 ],
               ),
@@ -1085,16 +1208,4 @@ void main() {
       );
     },
   );
-}
-
-class _CustomClipper extends CustomClipper<Rect> {
-  @override
-  Rect getClip(Size size) {
-    return Rect.fromLTWH(0, 0, size.width / 2, size.height);
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper oldClipper) {
-    return true;
-  }
 }

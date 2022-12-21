@@ -29,10 +29,10 @@ class MyApp extends StatelessWidget {
       // home: const RRectangleExample(),
       // home: const FavoriteExample(),
       // home: const ClipExample(),
-      // home: const ImageClipper(),
+      home: const ImageClipper(),
       // home: const GradientColorExample(),
       // home: const MyCoranWidget(),
-      home: const AdaptiveLayout(),
+      // home: const AdaptiveLayout(),
     );
   }
 }
@@ -250,68 +250,151 @@ class ImageClipper extends StatelessWidget {
       //     )
       //     .buildCircle(radius: 300),
       // .buildRect(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                shape: BoxShape.circle,
-                // backgroundBlendMode: BlendMode,
-                image: DecorationImage(
-                  fit: BoxFit.none,
-                  image: NetworkImage(
-                    'https://twistedsifter.com/wp-content/uploads/2010/11/funny-splash-mountain-28.jpg',
+      body: true
+          ? Center(
+              child: SizedBox(
+                // height: 500,
+                // width: 500,
+                child: Rectangle(
+                  width: 705,
+                  height: 400,
+                  clipBehavior: Clip.antiAlias,
+                  alignment: Alignment(0, -1),
+                  boxShadow: BoxShadowWithElevation(6),
+                  // isOverlay: false,
+                  child: Image.network(
+                    'https://freequranlearning.com/images/alquran/30/536.jpg',
+                    fit: BoxFit.cover,
+                    width: 805,
+                    // height: 700,
+                    alignment: Alignment.center,
+                    // fit: BoxFit.cover,
                   ),
-                ),
+                ).colorize(Colors.green).colorize(),
               ),
-              child: SizedBox.square(
-                dimension: 300,
+            )
+          : Container(
+              child: Column(
+                children: [
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: Rectangle(
+                      // width: 405,
+                      // height: 400,
+                      clipBehavior: Clip.antiAlias,
+                      alignment: Alignment.center,
+                      boxShadow: BoxShadowWithElevation(6),
+                      paintStyle: PaintStyle(
+                        style: PaintingStyle.stroke,
+                        strokeWidth: 8,
+                      ),
+                      isOverlay: false,
+                      child: Image.network(
+                        'https://freequranlearning.com/images/alquran/30/536.jpg',
+                        fit: BoxFit.cover,
+                        // width: 805,
+                        // height: 700,
+                        alignment: Alignment.center,
+                        // fit: BoxFit.cover,
+                      ),
+                    ).colorize(Colors.green).colorize(),
+                  ),
+
+                  // DecoratedBox(
+                  //   decoration: BoxDecoration(
+                  //     color: Colors.blue,
+                  //     shape: BoxShape.circle,
+                  //     // backgroundBlendMode: BlendMode,
+                  //     image: DecorationImage(
+                  //       fit: BoxFit.none,
+                  //       image: NetworkImage(
+                  //         'https://twistedsifter.com/wp-content/uploads/2010/11/funny-splash-mountain-28.jpg',
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  //   child: SizedBox.square(
+                  //     dimension: 300,
+                  //   ),
+                  // ),
+                  // SizedBox(
+                  //     width: 600,
+                  //     height: 400,
+                  //     child: Image.network(
+                  //       'https://twistedsifter.com/wp-content/uploads/2010/11/funny-splash-mountain-28.jpg',
+                  //       fit: BoxFit.none,
+                  //       // fit: BoxFit.cover,
+                  //     )),
+                  // SizedBox(
+                  //   width: 600,
+                  //   height: 400,
+                  //   child: Image.network(
+                  //     'https://twistedsifter.com/wp-content/uploads/2010/11/funny-splash-mountain-28.jpg',
+                  //     fit: BoxFit.none,
+                  //     // fit: BoxFit.cover,
+                  //   ),
+                  // )
+                  //     .foreground(
+                  //       alignment: Alignment.topLeft,
+                  //       // color: Colors.red,
+                  //       color: Colors.transparent,
+                  //       // color: ColorWithGradient(
+                  //       //   LinearGradient(colors: [Colors.transparent, Colors.blue]),
+                  //       //   blendMode: BlendMode.difference,
+                  //       // ),
+
+                  //       clipBehavior: Clip.antiAlias,
+                  //       // alignment: Alignment.bottomRight,
+                  //     )
+                  //     .buildCircle(radius: 150)
+                  //     .colorize(),
+
+                  // SizedBox(
+                  //         width: 600,
+                  //         height: 400,
+                  //         child: Image.network(
+                  //           'https://twistedsifter.com/wp-content/uploads/2010/11/funny-splash-mountain-28.jpg',
+                  //           fit: BoxFit.cover,
+                  //           // fit: BoxFit.cover,
+                  //         ))
+                  //     .foreground(
+                  //       alignment: Alignment.bottomRight,
+                  //       color: Colors.transparent,
+                  //       // color: ColorWithBlendMode(Colors.red, BlendMode.colorBurn),
+                  //       // color: ColorWithGradient(
+                  //       //   LinearGradient(colors: [Colors.transparent, Colors.blue]),
+                  //       //   blendMode: BlendMode.difference,
+                  //       // ),
+                  //       clipBehavior: Clip.antiAlias,
+                  //       // alignment: Alignment.bottomRight,
+                  //     )
+                  //     .buildCircle(radius: 150)
+                  //     .colorize(),
+
+                  // // .background(
+                  // //   alignment: Alignment.topLeft,
+                  // //   clipBehavior: Clip.antiAlias,
+                  // // )
+                  // // .buildCircle(radius: 100)
+
+                  // // .buildCapsule(height: 300),
+                  // Image.network(
+                  //   'https://twistedsifter.com/wp-content/uploads/2010/11/funny-splash-mountain-28.jpg',
+                  //   // fit: BoxFit.scaleDown,
+                  //   fit: BoxFit.cover,
+                  //   // colorBlendMode: BlendMode.colorBurn,
+                  // )
+                  //     .foreground(
+                  //       color: Colors.red.withOpacity(.3),
+                  //       clipBehavior: Clip.antiAlias,
+                  //       alignment: Alignment.center,
+                  //     )
+                  //     .buildCapsule(height: 300, width: 600),
+
+                  // // .buildOval(height: 80, width: 150),
+                ],
               ),
             ),
-
-            Image.network(
-              'https://twistedsifter.com/wp-content/uploads/2010/11/funny-splash-mountain-28.jpg',
-              fit: BoxFit.cover,
-              // fit: BoxFit.cover,
-            )
-                .foreground(
-                  // color: Colors.red,
-                  color: ColorWithBlendMode(Colors.red, BlendMode.colorBurn),
-                  // color: ColorWithGradient(
-                  //   LinearGradient(colors: [Colors.transparent, Colors.blue]),
-                  //   blendMode: BlendMode.difference,
-                  // ),
-                  clipBehavior: Clip.antiAlias,
-                  // alignment: Alignment.bottomRight,
-                )
-                .buildCircle(radius: 150)
-                .colorize()
-            // .background(
-            //   alignment: Alignment.topLeft,
-            //   clipBehavior: Clip.antiAlias,
-            // )
-            // .buildCircle(radius: 100)
-            ,
-
-            // .buildCapsule(height: 300),
-            Image.network(
-              'https://twistedsifter.com/wp-content/uploads/2010/11/funny-splash-mountain-28.jpg',
-              // fit: BoxFit.scaleDown,
-              fit: BoxFit.cover,
-              // colorBlendMode: BlendMode.colorBurn,
-            )
-                .foreground(
-                  color: Colors.red.withOpacity(.3),
-                  clipBehavior: Clip.antiAlias,
-                  alignment: Alignment.center,
-                )
-                .buildCapsule(height: 300, width: 600),
-
-            // .buildOval(height: 80, width: 150),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -861,14 +944,23 @@ class ClipExample extends StatelessWidget {
               Text('This is me').background().buildCircle(),
 
               Material(
+                color: Colors.red,
                 child: InkWell(
                   onTap: () => print('Tap'),
-                  child: Text('TAP'),
-                ),
-              ).background(clipBehavior: Clip.antiAlias).buildCapsule(
+                  child: SizedBox(
                     width: double.infinity,
                     height: 100,
+                    child: Center(child: Text('TAP')),
                   ),
+                ),
+              )
+                  .background(
+                    clipBehavior: Clip.antiAlias,
+                  )
+                  .buildCapsule(
+                      // width: double.infinity,
+                      // height: 100,
+                      ),
               Expanded(
                 child: Text('This is me')
                     .background(alignment: Alignment.center)

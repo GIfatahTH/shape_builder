@@ -13,32 +13,34 @@ part 'oval.dart';
 part 'rectangle.dart';
 part 'rounded_rectangle.dart';
 
-abstract class _BaseRenderShape extends RenderProxyBoxWithHitTestBehavior {
+abstract class _BaseRenderShape extends RenderAligningShiftedBox {
   _BaseRenderShape({
     required double? width,
     required double? height,
     required Color? color,
     required List<BoxShadow> boxShadow,
     required Clip clipBehavior,
+    required bool clipShrink,
     required this.buildContext,
     required bool isOverlay,
     required AlignmentGeometry alignment,
     required DecorationImage? decorationImage,
     required double? squareSide,
-    required bool isTightConstraint,
+    required Size? imageSize,
     required PaintStyle? paintStyle,
   })  : _color = color,
         _width = width,
         _height = height,
         _boxShadow = boxShadow,
         _clipBehavior = clipBehavior,
+        _clipShrink = clipShrink,
         _isOverlay = isOverlay,
         _alignment = alignment,
         _decorationImage = decorationImage,
         _squareSide = squareSide,
-        _isTightConstraint = isTightConstraint,
+        _imageSize = imageSize,
         _paintStyle = paintStyle,
-        super(behavior: HitTestBehavior.opaque);
+        super(textDirection: TextDirection.ltr);
 
   final BuildContext buildContext;
 
@@ -78,6 +80,16 @@ abstract class _BaseRenderShape extends RenderProxyBoxWithHitTestBehavior {
     markNeedsPaint();
   }
 
+  bool _clipShrink;
+  set clipShrink(bool value) {
+    if (value == _clipShrink) {
+      return;
+    }
+    _clipShrink = value;
+    resetPainters();
+    markNeedsPaint();
+  }
+
   double? _width;
   set width(double? value) {
     if (value == _width) {
@@ -108,24 +120,26 @@ abstract class _BaseRenderShape extends RenderProxyBoxWithHitTestBehavior {
     markNeedsPaint();
   }
 
-  bool _isTightConstraint;
-  set isTightConstraint(bool value) {
-    if (value == _isTightConstraint) {
+  Size? _imageSize;
+  set imageSize(Size? value) {
+    if (value == _imageSize) {
       return;
     }
-    _isTightConstraint = value;
+    _imageSize = value;
     resetPainters();
     markNeedsPaint();
   }
 
   AlignmentGeometry _alignment;
+  @override
   set alignment(AlignmentGeometry value) {
     if (value == _alignment) {
       return;
     }
+    _resolvedAlignment = null;
     _alignment = value;
-    // resetPainters();
-    // markNeedsPaint();
+    resetPainters();
+    markNeedsPaint();
   }
 
   DecorationImage? _decorationImage;
@@ -199,77 +213,141 @@ abstract class _BaseRenderShape extends RenderProxyBoxWithHitTestBehavior {
     BoxConstraints c, {
     required bool parentUseSize,
   }) {
-    _width = c.hasTightWidth ? c.minWidth : _width;
-    _height = c.hasTightHeight ? c.minHeight : _height;
-
-    var dd = _isTightConstraint
-        ? c.constrainSizeAndAttemptToPreserveAspectRatio(
-            Size(_width ?? double.infinity, _height ?? double.infinity),
-          )
-        : c.constrain(
-            Size(_width ?? double.infinity, _height ?? double.infinity));
-
-    if (_squareSide != null && !c.isTight) {
-      dd = Size.square(
-        c.hasTightWidth
-            ? c.maxWidth
-            : c.hasTightHeight
-                ? c.maxHeight
-                : dd.shortestSide,
-      );
-    }
-
-    BoxConstraints constraints;
-    if (child == null) {
-      constraints = BoxConstraints.tight(dd);
-    } else if (!_isTightConstraint) {
-      constraints = BoxConstraints(
-        maxWidth: c.maxWidth,
-        maxHeight: c.maxHeight,
-        minWidth: _width == null ? 0.0 : dd.width,
-        minHeight: _height == null ? 0.0 : dd.height,
-      );
-    } else {
-      constraints = c.tighten(
-        width: dd.width,
-        height: dd.height,
-      );
-    }
-
+    var width = c.hasTightWidth ? c.minWidth : _width;
+    var height = c.hasTightHeight ? c.minHeight : _height;
     Size? drySize;
-    if (child != null) {
-      if (parentUseSize) {
-        child!.layout(constraints, parentUsesSize: true);
-        drySize = child!.size;
+    if (_imageSize != null) {
+      var dd = c.constrainSizeAndAttemptToPreserveAspectRatio(
+        Size(
+          _imageSize!.width != -1 ? _imageSize!.width : width ?? c.maxWidth,
+          _imageSize!.height != -1 ? _imageSize!.height : height ?? c.maxHeight,
+        ),
+      );
+
+      // if (_squareSide != null && !c.isTight) {
+      //   dd = Size.square(
+      //     c.hasTightWidth
+      //         ? c.maxWidth
+      //         : c.hasTightHeight
+      //             ? c.maxHeight
+      //             : dd.shortestSide,
+      //   );
+      // }
+
+      // var constraints = c.tighten(
+      //   width: dd.width,
+      //   height: dd.height,
+      // );
+
+      // final w = _imageSize!.width == -1
+      //     ? constraints.maxWidth
+      //     : min(_imageSize!.width, c.maxWidth);
+      // final h = _imageSize!.height == -1
+      //     ? constraints.maxHeight
+      //     : min(_imageSize!.height, c.maxHeight);
+      child!.layout(
+        // _imageSize == const Size(-1, -1) || true
+        // ? BoxConstraints(
+        //     minWidth: w,
+        //     maxWidth: w,
+        //     minHeight: h,
+        //     maxHeight: h,
+        //   )
+        // :
+        BoxConstraints.tight(dd),
+        parentUsesSize: true,
+      );
+      drySize = child!.size;
+      // if (width == null) {
+      //   width = drySize.width;
+      //   _imageSize = Size(width, _imageSize!.height);
+      // }
+      // if (height == null) {
+      //   height = drySize.height;
+      //   _imageSize = Size(_imageSize!.width, height);
+      // }
+      if (_imageSize == const Size(-1, -1)) {
+        sizeToPaint = drySize;
       } else {
-        drySize = child!.getDryLayout(c);
+        final widthFactor =
+            _imageSize!.width == -1 ? 1 : drySize.width / _imageSize!.width;
+        final heightFactor =
+            _imageSize!.height == -1 ? 1 : drySize.height / _imageSize!.height;
+        sizeToPaint = Size(
+          _width != null ? _width! * widthFactor : drySize.width,
+          _height != null ? _height! * widthFactor : drySize.height,
+          // (_width ?? drySize.width) * widthFactor,
+          // (_height ?? drySize.height) * heightFactor,
+        );
+      }
+
+      if (_squareSide != null &&
+          (_imageSize?.width == -1 || _imageSize?.height == -1)) {
+        if (drySize.aspectRatio != 1) {
+          sizeToPaint = Size.square(drySize.shortestSide);
+        }
       }
     } else {
-      drySize = Size(constraints.maxWidth, constraints.maxHeight);
-    }
+      var dd = c
+          .constrain(Size(width ?? double.infinity, height ?? double.infinity));
 
-    sizeToPaint = drySize;
+      if (_squareSide != null && !c.isTight) {
+        dd = Size.square(
+          c.hasTightWidth
+              ? c.maxWidth
+              : c.hasTightHeight
+                  ? c.maxHeight
+                  : dd.shortestSide,
+        );
+      }
 
-    if (_squareSide != null) {
-      if (drySize.aspectRatio != 1) {
-        sizeToPaint = Size.square(drySize.shortestSide);
+      BoxConstraints constraints;
+      if (child == null) {
+        constraints = BoxConstraints.tight(dd);
+      } else {
+        constraints = BoxConstraints(
+          maxWidth: c.maxWidth,
+          maxHeight: c.maxHeight,
+          minWidth: width == null ? 0.0 : dd.width,
+          minHeight: height == null ? 0.0 : dd.height,
+        );
+      }
+
+      if (child != null) {
+        if (parentUseSize) {
+          child!.layout(constraints, parentUsesSize: true);
+          drySize = child!.size;
+          sizeToPaint = drySize;
+        } else {
+          drySize = child!.getDryLayout(constraints);
+          sizeToPaint = drySize;
+        }
+      } else {
+        drySize = Size(constraints.maxWidth, constraints.maxHeight);
+        sizeToPaint = drySize;
+      }
+      if (_squareSide != null) {
+        if (drySize.aspectRatio != 1) {
+          sizeToPaint = Size.square(drySize.shortestSide);
+        }
       }
     }
 
     sizeToPaint = Size(
-      min(sizeToPaint.width, _width ?? double.infinity),
-      min(sizeToPaint.height, _height ?? double.infinity),
+      min(sizeToPaint.width, width ?? double.infinity),
+      min(sizeToPaint.height, height ?? double.infinity),
     );
+    this.drySize = drySize;
 
-    // return _clipBehavior == Clip.none
-    //     ? drySize
-    //     : Size(
-    //         _width ?? drySize.width,
-    //         _height ?? drySize.height,
-    //       );
-    return drySize;
+    return _clipBehavior == Clip.none || !_clipShrink
+        ? drySize
+        : Size(
+            c.hasTightWidth ? c.minWidth : sizeToPaint.width,
+            c.hasTightHeight ? c.minHeight : sizeToPaint.height,
+          );
   }
 
+  Size drySize = Size.zero;
   Size sizeToPaint = Size.zero;
 
   @override
@@ -286,14 +364,14 @@ abstract class _BaseRenderShape extends RenderProxyBoxWithHitTestBehavior {
   @override
   void paint(PaintingContext context, Offset offset) {
     if (size == Size.zero) return;
-    final effectiveSize = getEffectiveRect(offset);
+    final effectiveRect = getEffectiveRect(offset);
     bool recreate =
-        _painter == null || effectiveSize != _painter!.effectiveRect;
+        _painter == null || effectiveRect != _painter!.effectiveRect;
     _painter = recreate
         ? _ShapePainter(
             offset: offset,
             onChanged: markNeedsPaint,
-            effectiveRect: effectiveSize,
+            effectiveRect: effectiveRect,
             renderShape: this,
             paintStyle: _paintStyle,
           )
@@ -301,21 +379,43 @@ abstract class _BaseRenderShape extends RenderProxyBoxWithHitTestBehavior {
     _painter!.paint(context, offset);
   }
 
+  Alignment? _resolvedAlignment;
+
+  @override
+  void alignChild() {
+    assert(child != null);
+    assert(!child!.debugNeedsLayout);
+    assert(child!.hasSize);
+    assert(hasSize);
+    assert(_resolvedAlignment != null);
+    final BoxParentData childParentData = child!.parentData! as BoxParentData;
+    childParentData.offset =
+        _resolvedAlignment!.alongOffset((size - child!.size) as Offset);
+  }
+
   Rect getEffectiveRect(Offset offset) {
     double width = sizeToPaint.width;
     double height = sizeToPaint.height;
     // print(child!.size);
     // final s = _clipBehavior == Clip.none ? size : (child?.size ?? size);
+    // final s = _clipBehavior == Clip.none ? size : drySize;
     final s = size;
 
-    final alignment = _alignment.resolve(Directionality.maybeOf(buildContext));
-    final x = alignment.x;
+    _resolvedAlignment =
+        _alignment.resolve(Directionality.maybeOf(buildContext));
+
+    final x = _resolvedAlignment!.x;
     offsetX = (s.width * x + s.width + -x.sign * width) / 2;
-    final y = alignment.y;
+    final y = _resolvedAlignment!.y;
     offsetY = (s.height * y + s.height - y.sign * height) / 2;
+
+    if (child != null && _clipShrink) {
+      alignChild();
+    }
 
     return Rect.fromCenter(
       center: offset + Offset(offsetX, offsetY),
+      // center: offset,
       width: width,
       height: height,
     );
@@ -483,6 +583,12 @@ class _ShapePainter {
 
     if (image == null) {
       if (child != null) {
+        if (renderShape._clipShrink) {
+          final BoxParentData childParentData =
+              child.parentData! as BoxParentData;
+          context.paintChild(child, childParentData.offset + offset);
+          return;
+        }
         context.paintChild(child, offset);
       }
       return;
@@ -503,7 +609,7 @@ class _ShapePainter {
     _imagePainter?.dispose();
   }
 
-  void _performPaint(PaintingContext context, Offset offset) {
+  void _performPaint(PaintingContext context, Offset _) {
     _paintShadows(context.canvas);
     if (renderShape._isOverlay) {
       _paintBackgroundImageOrChild(context);
