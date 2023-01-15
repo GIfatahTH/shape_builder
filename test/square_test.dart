@@ -12,11 +12,32 @@ void main() {
     'rectangle',
     () {
       testGoldens(
+        '1- Shrink to take the min available space if both height and width'
+        'are not specified and the child is null',
+        (tester) async {
+          await tester.pumpWidgetBuilder(
+            Center(
+                child: Rectangle.square(
+              shouldExpand: true,
+            )),
+            wrapper: materialAppWrapper(
+              theme: ThemeData.light(),
+              platform: TargetPlatform.android,
+            ),
+          );
+          await screenMatchesGolden(tester, 'square/square_0001');
+        },
+      );
+
+      testGoldens(
         '1- Expands to take the max available space if both height and width'
         'are not specified and the child is null',
         (tester) async {
           await tester.pumpWidgetBuilder(
-            Center(child: Rectangle.square()),
+            Center(
+                child: Rectangle.square(
+              shouldExpand: true,
+            )),
             wrapper: materialAppWrapper(
               theme: ThemeData.light(),
               platform: TargetPlatform.android,
@@ -233,7 +254,7 @@ void main() {
                   const Text('1 12 123 1234')
                       .background(
                         alignment: Alignment.center,
-                        clipShrink: true,
+                        shrinkToClippedSize: true,
                         clipBehavior: Clip.antiAlias,
                       )
                       .buildSquare(80)
@@ -241,7 +262,7 @@ void main() {
                   const Text('1 12 123 1234')
                       .background(
                         alignment: Alignment.centerRight,
-                        clipShrink: true,
+                        shrinkToClippedSize: true,
                         clipBehavior: Clip.antiAlias,
                       )
                       .buildSquare(80)
@@ -250,14 +271,14 @@ void main() {
                       .background(
                         alignment: Alignment.centerLeft,
                         clipBehavior: Clip.antiAlias,
-                        clipShrink: false,
+                        shrinkToClippedSize: false,
                       )
                       .buildSquare(80)
                       .colorize(Colors.amber),
                   const Text('1 12 123 1234')
                       .background(
                         alignment: Alignment.center,
-                        clipShrink: false,
+                        shrinkToClippedSize: false,
                         clipBehavior: Clip.antiAlias,
                       )
                       .buildSquare(80)
@@ -265,7 +286,7 @@ void main() {
                   const Text('1 12 123 1234')
                       .background(
                         alignment: Alignment.centerRight,
-                        clipShrink: false,
+                        shrinkToClippedSize: false,
                         clipBehavior: Clip.antiAlias,
                       )
                       .buildSquare(80)
@@ -459,47 +480,54 @@ void main() {
             Center(
               child: Column(
                 children: [
-                  Image.memory(
-                    data,
-                    fit: BoxFit.cover,
-                    width: 200,
-                    height: 100,
-                  ),
-                  const SizedBox(height: 8),
-                  Image.memory(
-                    data,
-                    fit: BoxFit.cover,
-                    width: 200,
-                    height: 100,
-                  )
-                      .background(
-                        alignment: Alignment.center,
-                        clipBehavior: Clip.antiAlias,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.memory(
+                        data,
+                        fit: BoxFit.cover,
+                        width: 200,
+                        height: 100,
+                      ),
+                      const SizedBox(width: 8),
+                      Image.memory(
+                        data,
+                        fit: BoxFit.cover,
+                        width: 200,
+                        height: 100,
                       )
-                      .buildSquare(80)
-                      .colorize(Colors.amber),
+                          .background(
+                            alignment: Alignment.center,
+                            clipBehavior: Clip.antiAlias,
+                          )
+                          .buildSquare(
+                            60,
+                          )
+                          .colorize(Colors.amber),
+                    ],
+                  ),
+                  const SizedBox(width: 8),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
-                        width: 200,
-                        height: 100,
-                        child: Image.memory(
-                          data,
-                          fit: BoxFit.cover,
-                          width: 200,
-                          height: 100,
-                        )
-                            .background(
-                              alignment: Alignment.center,
-                              clipBehavior: Clip.antiAlias,
-                            )
-                            .buildSquare(80)
-                            .colorize(Colors.amber),
+                        width: 150,
+                        // height: 200,
+                        child: Rectangle.square(
+                          side: 60,
+                          alignment: Alignment.center,
+                          clipBehavior: Clip.antiAlias,
+                          child: Image.memory(
+                            data,
+                            fit: BoxFit.cover,
+                            width: 200,
+                            height: 100,
+                          ),
+                        ).colorize(Colors.amber),
                       ),
                       SizedBox(
                         width: 150,
-                        height: 90,
+                        // height: 200,
                         child: Image.memory(
                           data,
                           fit: BoxFit.cover,
@@ -510,12 +538,14 @@ void main() {
                               alignment: Alignment.center,
                               clipBehavior: Clip.antiAlias,
                             )
-                            .buildSquare(80)
+                            .buildSquare(
+                              60,
+                            )
                             .colorize(Colors.amber),
                       ),
                       SizedBox(
-                        width: 100 * .8,
-                        height: 80 * .8,
+                        width: 80,
+                        // height: 200,
                         child: Image.memory(
                           data,
                           fit: BoxFit.cover,
@@ -526,7 +556,27 @@ void main() {
                               alignment: Alignment.center,
                               clipBehavior: Clip.antiAlias,
                             )
-                            .buildSquare(80)
+                            .buildSquare(
+                              60,
+                            )
+                            .colorize(Colors.amber),
+                      ),
+                      SizedBox(
+                        width: 50,
+                        // height: 80 * .8,
+                        child: Image.memory(
+                          data,
+                          fit: BoxFit.cover,
+                          width: 200,
+                          height: 100,
+                        )
+                            .background(
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.antiAlias,
+                            )
+                            .buildSquare(
+                              60,
+                            )
                             .colorize(Colors.amber),
                       ),
                     ],
@@ -537,8 +587,8 @@ void main() {
                     children: [
                       ConstrainedBox(
                         constraints: const BoxConstraints(
-                          maxWidth: 200,
-                          maxHeight: 100,
+                          maxWidth: 300,
+                          // maxHeight: 200,
                         ),
                         child: Image.memory(
                           data,
@@ -550,13 +600,15 @@ void main() {
                               alignment: Alignment.center,
                               clipBehavior: Clip.antiAlias,
                             )
-                            .buildSquare(80)
+                            .buildSquare(
+                              60,
+                            )
                             .colorize(Colors.amber),
                       ),
                       ConstrainedBox(
                         constraints: const BoxConstraints(
-                          maxWidth: 150,
-                          maxHeight: 90,
+                          maxWidth: 80,
+                          // maxHeight: 50,
                         ),
                         child: Image.memory(
                           data,
@@ -568,13 +620,15 @@ void main() {
                               alignment: Alignment.center,
                               clipBehavior: Clip.antiAlias,
                             )
-                            .buildSquare(80)
+                            .buildSquare(
+                              60,
+                            )
                             .colorize(Colors.amber),
                       ),
                       ConstrainedBox(
                         constraints: const BoxConstraints(
-                          maxWidth: 100 * .8,
-                          maxHeight: 80 * .8,
+                          maxWidth: 50,
+                          // maxHeight: 25,
                         ),
                         child: Image.memory(
                           data,
@@ -586,7 +640,9 @@ void main() {
                               alignment: Alignment.center,
                               clipBehavior: Clip.antiAlias,
                             )
-                            .buildSquare(80)
+                            .buildSquare(
+                              60,
+                            )
                             .colorize(Colors.amber),
                       ),
                     ],
@@ -597,39 +653,77 @@ void main() {
                     children: [
                       ConstrainedBox(
                         constraints: const BoxConstraints(
-                          maxWidth: 200,
-                          maxHeight: 100,
+                          maxWidth: 300,
+                          // maxHeight: 200,
                         ),
                         child: Image.memory(
                           data,
                           fit: BoxFit.cover,
+                          width: 200,
+                          height: 100,
                         )
                             .background(
+                              shouldExpand: true,
                               alignment: Alignment.center,
                               clipBehavior: Clip.antiAlias,
                             )
-                            .buildSquare(80)
+                            .buildSquare(
+                              60,
+                            )
                             .colorize(Colors.amber),
                       ),
                       ConstrainedBox(
                         constraints: const BoxConstraints(
-                          maxWidth: 150,
-                          maxHeight: 90,
+                          maxWidth: 80,
+                          // maxHeight: 50,
                         ),
                         child: Image.memory(
                           data,
                           fit: BoxFit.cover,
+                          width: 200,
+                          height: 100,
                         )
                             .background(
+                              shouldExpand: true,
                               alignment: Alignment.center,
                               clipBehavior: Clip.antiAlias,
                             )
-                            .buildSquare(80),
+                            .buildSquare(
+                              60,
+                            )
+                            .colorize(Colors.amber),
                       ),
                       ConstrainedBox(
                         constraints: const BoxConstraints(
-                          maxWidth: 100 * .8,
-                          maxHeight: 80 * .8,
+                          maxWidth: 50,
+                          // maxHeight: 25,
+                        ),
+                        child: Image.memory(
+                          data,
+                          fit: BoxFit.cover,
+                          width: 200,
+                          height: 100,
+                        )
+                            .background(
+                              shouldExpand: true,
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.antiAlias,
+                            )
+                            .buildSquare(
+                              60,
+                            )
+                            .colorize(Colors.amber),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 300,
+                          maxHeight: 200,
                         ),
                         child: Image.memory(
                           data,
@@ -639,7 +733,41 @@ void main() {
                               alignment: Alignment.center,
                               clipBehavior: Clip.antiAlias,
                             )
-                            .buildSquare(80)
+                            .buildSquare(
+                              60,
+                            )
+                            .colorize(Colors.amber),
+                      ),
+                      ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            maxWidth: 100,
+                            maxHeight: 50,
+                          ),
+                          child: Image.memory(
+                            data,
+                            fit: BoxFit.cover,
+                          )
+                              .background(
+                                alignment: Alignment.center,
+                                clipBehavior: Clip.antiAlias,
+                              )
+                              .buildSquare(80)),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 50,
+                          maxHeight: 25,
+                        ),
+                        child: Image.memory(
+                          data,
+                          fit: BoxFit.cover,
+                        )
+                            .background(
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.antiAlias,
+                            )
+                            .buildSquare(
+                              60,
+                            )
                             .colorize(Colors.amber),
                       ),
                     ],
@@ -1087,6 +1215,195 @@ void main() {
           await screenMatchesGolden(tester, 'square/square_024');
         },
       );
+    },
+  );
+
+  testGoldens(
+    '26- with clipBehavior with infinite sized width. case shouldExpand is true',
+    (tester) async {
+      final file = File(
+        path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
+      );
+      final data = file.readAsBytesSync();
+      await tester.pumpWidgetBuilder(
+        Center(
+            child: SizedBox(
+          width: double.infinity,
+          child: Image.memory(
+            data,
+            fit: BoxFit.cover,
+            width: 300,
+            height: 300,
+          )
+              .background(
+                shouldExpand: true,
+                clipBehavior: Clip.antiAlias,
+                alignment: Alignment.center,
+              )
+              .buildSquare(
+                80,
+              )
+              .colorize(Colors.amber),
+        )),
+        wrapper: materialAppWrapper(
+          theme: ThemeData.light(),
+          platform: TargetPlatform.android,
+        ),
+      );
+      await screenMatchesGolden(tester, 'square/square_026');
+    },
+  );
+
+  testGoldens(
+    '27- with clipBehavior  case shouldExpand is true',
+    (tester) async {
+      final file = File(
+        path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
+      );
+      final data = file.readAsBytesSync();
+      await tester.pumpWidgetBuilder(
+        Center(
+          child: Image.memory(
+            data,
+            fit: BoxFit.cover,
+            width: 300,
+            height: 300,
+          )
+              .background(
+                shouldExpand: true,
+                clipBehavior: Clip.antiAlias,
+                alignment: Alignment.center,
+              )
+              .buildSquare(
+                80,
+              )
+              .colorize(Colors.amber),
+        ),
+        wrapper: materialAppWrapper(
+          theme: ThemeData.light(),
+          platform: TargetPlatform.android,
+        ),
+      );
+      await screenMatchesGolden(tester, 'square/square_027');
+    },
+  );
+
+  testGoldens(
+    '28- with clipBehavior  case shouldExpand is true, shape width = null',
+    (tester) async {
+      final file = File(
+        path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
+      );
+      final data = file.readAsBytesSync();
+      await tester.pumpWidgetBuilder(
+        Center(
+          child: Image.memory(
+            data,
+            fit: BoxFit.cover,
+            width: 300,
+            height: 300,
+          )
+              .background(
+                shouldExpand: true,
+                clipBehavior: Clip.antiAlias,
+                alignment: Alignment.center,
+              )
+              .buildSquare(
+                80,
+              )
+              .colorize(Colors.amber),
+        ),
+        wrapper: materialAppWrapper(
+          theme: ThemeData.light(),
+          platform: TargetPlatform.android,
+        ),
+      );
+      await screenMatchesGolden(tester, 'square/square_028');
+    },
+  );
+
+  testGoldens(
+    '29- with clipBehavior  case shouldExpand is true, shape hight = null',
+    (tester) async {
+      final file = File(
+        path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
+      );
+      final data = file.readAsBytesSync();
+      await tester.pumpWidgetBuilder(
+        Center(
+          child: Image.memory(
+            data,
+            fit: BoxFit.cover,
+            width: 300,
+            height: 300,
+          )
+              .background(
+                shouldExpand: true,
+                clipBehavior: Clip.antiAlias,
+                alignment: Alignment.center,
+              )
+              .buildSquare(
+                100,
+                // height: 80,
+              )
+              .colorize(Colors.amber),
+        ),
+        wrapper: materialAppWrapper(
+          theme: ThemeData.light(),
+          platform: TargetPlatform.android,
+        ),
+      );
+      await screenMatchesGolden(tester, 'square/square_029');
+    },
+  );
+
+  testGoldens(
+    '30- inkWell',
+    (tester) async {
+      dynamic message;
+      await tester.pumpWidgetBuilder(
+        Center(
+          child: Column(
+            children: [
+              const Text('build background')
+                  .background()
+                  .inkWell(
+                    InkWell(
+                      splashColor: Colors.red,
+                      onTap: () {
+                        message = 'onTap';
+                      },
+                    ),
+                  )
+                  .buildSquare(),
+              const Text('build foreground')
+                  .foreground()
+                  .inkWell(
+                    InkWell(
+                      splashColor: Colors.red,
+                      onTap: () {
+                        message = 'onTap';
+                      },
+                    ),
+                  )
+                  .buildSquare(),
+            ],
+          ),
+        ),
+        wrapper: materialAppWrapper(
+          theme: ThemeData.light(),
+          platform: TargetPlatform.android,
+        ),
+      );
+      expect(message, null);
+      await tester.tap(find.text('build background'));
+      await tester.pump();
+      expect(message, 'onTap');
+      message = null;
+      await tester.press(find.text('build background'));
+      await tester.press(find.text('build foreground'));
+
+      await screenMatchesGolden(tester, 'square/square_030');
     },
   );
 }

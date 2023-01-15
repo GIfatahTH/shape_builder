@@ -12,11 +12,29 @@ void main() {
     'Circle',
     () {
       testGoldens(
-        '1- Expands to take the max available space if both height and width'
+        '1- Shrink to take the min available space if both height and width'
         'are not specified and the child is null',
         (tester) async {
           await tester.pumpWidgetBuilder(
             Center(child: Oval.circle()),
+            wrapper: materialAppWrapper(
+              theme: ThemeData.light(),
+              platform: TargetPlatform.android,
+            ),
+          );
+          await screenMatchesGolden(tester, 'circle/circle_0001');
+        },
+      );
+
+      testGoldens(
+        '1- Expands to take the max available space if both height and width'
+        'are not specified and the child is null',
+        (tester) async {
+          await tester.pumpWidgetBuilder(
+            Center(
+                child: Oval.circle(
+              shouldExpand: true,
+            )),
             wrapper: materialAppWrapper(
               theme: ThemeData.light(),
               platform: TargetPlatform.android,
@@ -270,7 +288,7 @@ void main() {
                       .foreground(
                         color: Colors.blue.withOpacity(.3),
                         alignment: Alignment.center,
-                        clipShrink: true,
+                        shrinkToClippedSize: true,
                         clipBehavior: Clip.antiAlias,
                       )
                       .buildCircle(
@@ -281,7 +299,7 @@ void main() {
                       .foreground(
                         color: Colors.blue.withOpacity(.3),
                         alignment: Alignment.centerRight,
-                        clipShrink: true,
+                        shrinkToClippedSize: true,
                         clipBehavior: Clip.antiAlias,
                       )
                       .buildCircle(
@@ -293,7 +311,7 @@ void main() {
                         color: Colors.blue.withOpacity(.3),
                         alignment: Alignment.centerLeft,
                         clipBehavior: Clip.antiAlias,
-                        clipShrink: false,
+                        shrinkToClippedSize: false,
                       )
                       .buildCircle(
                         radius: 25,
@@ -303,7 +321,7 @@ void main() {
                       .foreground(
                         color: Colors.blue.withOpacity(.3),
                         alignment: Alignment.center,
-                        clipShrink: false,
+                        shrinkToClippedSize: false,
                         clipBehavior: Clip.antiAlias,
                       )
                       .buildCircle(
@@ -314,7 +332,7 @@ void main() {
                       .foreground(
                         color: Colors.blue.withOpacity(.3),
                         alignment: Alignment.centerRight,
-                        clipShrink: false,
+                        shrinkToClippedSize: false,
                         clipBehavior: Clip.antiAlias,
                       )
                       .buildCircle(
@@ -540,85 +558,102 @@ void main() {
             Center(
               child: Column(
                 children: [
-                  Image.memory(
-                    data,
-                    fit: BoxFit.cover,
-                    width: 200,
-                    height: 100,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.memory(
+                        data,
+                        fit: BoxFit.cover,
+                        width: 200,
+                        height: 100,
+                      ),
+                      const SizedBox(width: 8),
+                      Image.memory(
+                        data,
+                        fit: BoxFit.cover,
+                        width: 200,
+                        height: 100,
+                      )
+                          .background(
+                            alignment: Alignment.center,
+                            clipBehavior: Clip.antiAlias,
+                          )
+                          .buildCircle(
+                            radius: 30,
+                          )
+                          .colorize(Colors.amber),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Image.memory(
-                    data,
-                    fit: BoxFit.cover,
-                    width: 200,
-                    height: 100,
-                  )
-                      .foreground(
-                        color: Colors.blue.withOpacity(.3),
-                        alignment: Alignment.center,
-                        clipBehavior: Clip.antiAlias,
-                      )
-                      .buildCircle(
-                        radius: 50,
-                      )
-                      .colorize(Colors.amber),
+                  const SizedBox(width: 8),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
-                        width: 200,
-                        height: 100,
-                        child: Image.memory(
-                          data,
-                          fit: BoxFit.cover,
-                          width: 200,
-                          height: 100,
-                        )
-                            .foreground(
-                              color: Colors.blue.withOpacity(.3),
-                              alignment: Alignment.center,
-                              clipBehavior: Clip.antiAlias,
-                            )
-                            .buildCircle(
-                              radius: 50,
-                            )
-                            .colorize(Colors.amber),
+                        width: 150,
+                        // height: 200,
+                        child: Oval.circle(
+                          radius: 30,
+                          alignment: Alignment.center,
+                          clipBehavior: Clip.antiAlias,
+                          child: Image.memory(
+                            data,
+                            fit: BoxFit.cover,
+                            width: 200,
+                            height: 100,
+                          ),
+                        ).colorize(Colors.amber),
                       ),
                       SizedBox(
                         width: 150,
-                        height: 90,
+                        // height: 200,
                         child: Image.memory(
                           data,
                           fit: BoxFit.cover,
                           width: 200,
                           height: 100,
                         )
-                            .foreground(
-                              color: Colors.blue.withOpacity(.3),
+                            .background(
                               alignment: Alignment.center,
                               clipBehavior: Clip.antiAlias,
                             )
                             .buildCircle(
-                              radius: 50,
+                              radius: 30,
                             )
                             .colorize(Colors.amber),
                       ),
                       SizedBox(
-                        width: 100 * .8,
-                        height: 80 * .8,
+                        width: 80,
+                        // height: 200,
                         child: Image.memory(
                           data,
                           fit: BoxFit.cover,
                           width: 200,
                           height: 100,
                         )
-                            .foreground(
-                              color: Colors.blue.withOpacity(.3),
+                            .background(
                               alignment: Alignment.center,
                               clipBehavior: Clip.antiAlias,
                             )
                             .buildCircle(
-                              radius: 50,
+                              radius: 30,
+                            )
+                            .colorize(Colors.amber),
+                      ),
+                      SizedBox(
+                        width: 50,
+                        // height: 80 * .8,
+                        child: Image.memory(
+                          data,
+                          fit: BoxFit.cover,
+                          width: 200,
+                          height: 100,
+                        )
+                            .background(
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.antiAlias,
+                            )
+                            .buildCircle(
+                              radius: 30,
                             )
                             .colorize(Colors.amber),
                       ),
@@ -630,8 +665,8 @@ void main() {
                     children: [
                       ConstrainedBox(
                         constraints: const BoxConstraints(
-                          maxWidth: 200,
-                          maxHeight: 100,
+                          maxWidth: 300,
+                          // maxHeight: 200,
                         ),
                         child: Image.memory(
                           data,
@@ -639,20 +674,19 @@ void main() {
                           width: 200,
                           height: 100,
                         )
-                            .foreground(
-                              color: Colors.blue.withOpacity(.3),
+                            .background(
                               alignment: Alignment.center,
                               clipBehavior: Clip.antiAlias,
                             )
                             .buildCircle(
-                              radius: 50,
+                              radius: 30,
                             )
                             .colorize(Colors.amber),
                       ),
                       ConstrainedBox(
                         constraints: const BoxConstraints(
-                          maxWidth: 150,
-                          maxHeight: 90,
+                          maxWidth: 80,
+                          // maxHeight: 50,
                         ),
                         child: Image.memory(
                           data,
@@ -660,20 +694,19 @@ void main() {
                           width: 200,
                           height: 100,
                         )
-                            .foreground(
-                              color: Colors.blue.withOpacity(.3),
+                            .background(
                               alignment: Alignment.center,
                               clipBehavior: Clip.antiAlias,
                             )
                             .buildCircle(
-                              radius: 50,
+                              radius: 30,
                             )
                             .colorize(Colors.amber),
                       ),
                       ConstrainedBox(
                         constraints: const BoxConstraints(
-                          maxWidth: 100 * .8,
-                          maxHeight: 80 * .8,
+                          maxWidth: 50,
+                          // maxHeight: 25,
                         ),
                         child: Image.memory(
                           data,
@@ -681,13 +714,12 @@ void main() {
                           width: 200,
                           height: 100,
                         )
-                            .foreground(
-                              color: Colors.blue.withOpacity(.3),
+                            .background(
                               alignment: Alignment.center,
                               clipBehavior: Clip.antiAlias,
                             )
                             .buildCircle(
-                              radius: 50,
+                              radius: 30,
                             )
                             .colorize(Colors.amber),
                       ),
@@ -699,56 +731,120 @@ void main() {
                     children: [
                       ConstrainedBox(
                         constraints: const BoxConstraints(
-                          maxWidth: 200,
-                          maxHeight: 100,
+                          maxWidth: 300,
+                          // maxHeight: 200,
+                        ),
+                        child: Image.memory(
+                          data,
+                          fit: BoxFit.cover,
+                          width: 200,
+                          height: 100,
+                        )
+                            .background(
+                              shouldExpand: true,
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.antiAlias,
+                            )
+                            .buildCircle(
+                              radius: 30,
+                            )
+                            .colorize(Colors.amber),
+                      ),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 80,
+                          // maxHeight: 50,
+                        ),
+                        child: Image.memory(
+                          data,
+                          fit: BoxFit.cover,
+                          width: 200,
+                          height: 100,
+                        )
+                            .background(
+                              shouldExpand: true,
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.antiAlias,
+                            )
+                            .buildCircle(
+                              radius: 30,
+                            )
+                            .colorize(Colors.amber),
+                      ),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 50,
+                          // maxHeight: 25,
+                        ),
+                        child: Image.memory(
+                          data,
+                          fit: BoxFit.cover,
+                          width: 200,
+                          height: 100,
+                        )
+                            .background(
+                              shouldExpand: true,
+                              alignment: Alignment.center,
+                              clipBehavior: Clip.antiAlias,
+                            )
+                            .buildCircle(
+                              radius: 30,
+                            )
+                            .colorize(Colors.amber),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          maxWidth: 300,
+                          maxHeight: 200,
                         ),
                         child: Image.memory(
                           data,
                           fit: BoxFit.cover,
                         )
-                            .foreground(
-                              color: Colors.blue.withOpacity(.3),
+                            .background(
                               alignment: Alignment.center,
                               clipBehavior: Clip.antiAlias,
                             )
                             .buildCircle(
-                              radius: 50,
+                              radius: 30,
                             )
                             .colorize(Colors.amber),
                       ),
                       ConstrainedBox(
                           constraints: const BoxConstraints(
-                            maxWidth: 150,
-                            maxHeight: 90,
+                            maxWidth: 100,
+                            maxHeight: 50,
                           ),
                           child: Image.memory(
                             data,
                             fit: BoxFit.cover,
                           )
-                              .foreground(
-                                color: Colors.blue.withOpacity(.3),
+                              .background(
                                 alignment: Alignment.center,
                                 clipBehavior: Clip.antiAlias,
                               )
-                              .buildCircle(
-                                radius: 50,
-                              )),
+                              .buildCircle(radius: 40)),
                       ConstrainedBox(
                         constraints: const BoxConstraints(
-                          maxWidth: 100 * .8,
-                          maxHeight: 80 * .8,
+                          maxWidth: 50,
+                          maxHeight: 25,
                         ),
                         child: Image.memory(
                           data,
                           fit: BoxFit.cover,
                         )
-                            .foreground(
-                              color: Colors.blue.withOpacity(.3),
+                            .background(
                               alignment: Alignment.center,
                               clipBehavior: Clip.antiAlias,
                             )
                             .buildCircle(
-                              radius: 50,
+                              radius: 30,
                             )
                             .colorize(Colors.amber),
                       ),
@@ -762,7 +858,7 @@ void main() {
               platform: TargetPlatform.android,
             ),
           );
-          await screenMatchesGolden(tester, 'circle/circle_014');
+          await screenMatchesGolden(tester, 'circle/circle_0014');
         },
       );
 
@@ -1357,6 +1453,200 @@ void main() {
           await screenMatchesGolden(tester, 'circle/circle_025');
         },
       );
+
+      testGoldens(
+        '26- with clipBehavior with infinite sized width. case shouldExpand is true',
+        (tester) async {
+          final file = File(
+            path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
+          );
+          final data = file.readAsBytesSync();
+          await tester.pumpWidgetBuilder(
+            Center(
+                child: SizedBox(
+              width: double.infinity,
+              child: Image.memory(
+                data,
+                fit: BoxFit.cover,
+                width: 300,
+                height: 300,
+              )
+                  .background(
+                    shouldExpand: true,
+                    clipBehavior: Clip.antiAlias,
+                    alignment: Alignment.center,
+                  )
+                  .buildCircle(
+                    radius: 40,
+                  )
+                  .colorize(Colors.amber),
+            )),
+            wrapper: materialAppWrapper(
+              theme: ThemeData.light(),
+              platform: TargetPlatform.android,
+            ),
+          );
+          await screenMatchesGolden(tester, 'circle/circle_026');
+        },
+      );
+
+      testGoldens(
+        '27- with clipBehavior  case shouldExpand is true',
+        (tester) async {
+          final file = File(
+            path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
+          );
+          final data = file.readAsBytesSync();
+          await tester.pumpWidgetBuilder(
+            Center(
+              child: Image.memory(
+                data,
+                fit: BoxFit.cover,
+                width: 300,
+                height: 300,
+              )
+                  .background(
+                    shouldExpand: true,
+                    clipBehavior: Clip.antiAlias,
+                    alignment: Alignment.center,
+                  )
+                  .buildCircle(
+                    radius: 40,
+                  )
+                  .colorize(Colors.amber),
+            ),
+            wrapper: materialAppWrapper(
+              theme: ThemeData.light(),
+              platform: TargetPlatform.android,
+            ),
+          );
+          await screenMatchesGolden(tester, 'circle/circle_027');
+        },
+      );
+
+      testGoldens(
+        '28- with clipBehavior  case shouldExpand is true, shape width = null',
+        (tester) async {
+          final file = File(
+            path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
+          );
+          final data = file.readAsBytesSync();
+          await tester.pumpWidgetBuilder(
+            Center(
+              child: Image.memory(
+                data,
+                fit: BoxFit.cover,
+                width: 300,
+                height: 300,
+              )
+                  .background(
+                    shouldExpand: true,
+                    clipBehavior: Clip.antiAlias,
+                    alignment: Alignment.center,
+                  )
+                  .buildCircle(
+                    radius: 40,
+                  )
+                  .colorize(Colors.amber),
+            ),
+            wrapper: materialAppWrapper(
+              theme: ThemeData.light(),
+              platform: TargetPlatform.android,
+            ),
+          );
+          await screenMatchesGolden(tester, 'circle/circle_028');
+        },
+      );
+
+      testGoldens(
+        '29- with clipBehavior  case shouldExpand is true, shape hight = null',
+        (tester) async {
+          final file = File(
+            path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
+          );
+          final data = file.readAsBytesSync();
+          await tester.pumpWidgetBuilder(
+            Center(
+              child: Image.memory(
+                data,
+                fit: BoxFit.cover,
+                width: 300,
+                height: 300,
+              )
+                  .background(
+                    shouldExpand: true,
+                    clipBehavior: Clip.antiAlias,
+                    alignment: Alignment.center,
+                  )
+                  .buildCircle(
+                    radius: 40,
+
+                    // height: 80,
+                  )
+                  .colorize(Colors.amber),
+            ),
+            wrapper: materialAppWrapper(
+              theme: ThemeData.light(),
+              platform: TargetPlatform.android,
+            ),
+          );
+          await screenMatchesGolden(tester, 'circle/circle_029');
+        },
+      );
+    },
+  );
+
+  testGoldens(
+    '30- inkWell',
+    (tester) async {
+      final file = File(
+        path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
+      );
+      final data = file.readAsBytesSync();
+      dynamic message;
+      await tester.pumpWidgetBuilder(
+        Center(
+          child: Column(
+            children: [
+              const Text('build background')
+                  .background()
+                  .inkWell(
+                    InkWell(
+                      splashColor: Colors.red,
+                      onTap: () {
+                        message = 'onTap';
+                      },
+                    ),
+                  )
+                  .buildCircle(),
+              const Text('build foreground')
+                  .foreground()
+                  .inkWell(
+                    InkWell(
+                      splashColor: Colors.red,
+                      onTap: () {
+                        message = 'onTap';
+                      },
+                    ),
+                  )
+                  .buildCircle(),
+            ],
+          ),
+        ),
+        wrapper: materialAppWrapper(
+          theme: ThemeData.light(),
+          platform: TargetPlatform.android,
+        ),
+      );
+      expect(message, null);
+      await tester.tap(find.text('build background'));
+      await tester.pump();
+      expect(message, 'onTap');
+      message = null;
+      await tester.press(find.text('build background'));
+      await tester.press(find.text('build foreground'));
+
+      await screenMatchesGolden(tester, 'circle/circle_030');
     },
   );
 }

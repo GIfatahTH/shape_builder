@@ -1,5 +1,40 @@
 part of 'base_render_shape.dart';
 
+Widget _wrapWithInkWell(InkWell inkWell, [Widget? child]) {
+  final ink = InkResponse(
+    containedInkWell: true,
+    highlightShape: BoxShape.rectangle,
+    key: inkWell.key,
+    onTap: inkWell.onTap,
+    onTapDown: inkWell.onTapDown,
+    onTapUp: inkWell.onTapUp,
+    onTapCancel: inkWell.onTapCancel,
+    onDoubleTap: inkWell.onDoubleTap,
+    onLongPress: inkWell.onLongPress,
+    onHighlightChanged: inkWell.onHighlightChanged,
+    onHover: inkWell.onHover,
+    mouseCursor: inkWell.mouseCursor,
+    radius: inkWell.radius,
+    borderRadius: inkWell.borderRadius,
+    customBorder: inkWell.customBorder,
+    focusColor: inkWell.focusColor,
+    hoverColor: inkWell.hoverColor,
+    highlightColor: inkWell.highlightColor,
+    overlayColor: inkWell.overlayColor,
+    splashColor: inkWell.splashColor,
+    splashFactory: inkWell.splashFactory,
+    enableFeedback: inkWell.enableFeedback,
+    excludeFromSemantics: inkWell.excludeFromSemantics,
+    focusNode: inkWell.focusNode,
+    canRequestFocus: inkWell.canRequestFocus,
+    onFocusChange: inkWell.onFocusChange,
+    autofocus: inkWell.autofocus,
+    statesController: inkWell.statesController,
+    child: child,
+  );
+  return Material(type: MaterialType.transparency, child: ink);
+}
+
 class Oval extends _BaseSingleChildRenderObjectShape {
   Oval._({
     this.startAngle,
@@ -8,15 +43,18 @@ class Oval extends _BaseSingleChildRenderObjectShape {
     super.color,
     super.width,
     super.height,
+    required super.shouldExpand,
     super.squareSide,
     super.child,
     super.shadow = const [],
-    super.isOverlay = true,
+    super.childIsInTheForeground = true,
     super.clipBehavior = Clip.none,
-    super.clipShrink = true,
+    super.shrinkToClippedSize = true,
     super.alignment = Alignment.center,
     required super.paintStyle,
     required this.shouldClosePath,
+    super.isConstraintTransparent = false,
+    super.inkWell,
     super.key,
   });
 
@@ -28,16 +66,20 @@ class Oval extends _BaseSingleChildRenderObjectShape {
     Color? color,
     double? width,
     double? height,
+    bool shouldExpand = false,
     List<BoxShadow> boxShadow = const [],
     Widget? child,
     AlignmentGeometry alignment = Alignment.center,
     Clip clipBehavior = Clip.none,
-    bool clipShrink = true,
-    bool isOverlay = true,
+    bool shrinkToClippedSize = true,
+    bool childIsInTheForeground = true,
     PaintStyle? paintStyle,
+    InkWell? inkWell,
     Key? key,
   }) {
-    return Oval._(
+    final expandImage = shouldExpandImage(child, width, height);
+
+    final widget = Oval._(
       startAngle: startAngle,
       swipeAngle: swipeAngle,
       shouldClosePath: shouldClosePathToCenter,
@@ -47,78 +89,165 @@ class Oval extends _BaseSingleChildRenderObjectShape {
 
       width: width,
       height: height,
-
+      shouldExpand: expandImage ? false : shouldExpand,
       shadow: boxShadow,
       clipBehavior: clipBehavior,
-      clipShrink: clipShrink,
-      isOverlay: !isOverlay,
+      shrinkToClippedSize: shrinkToClippedSize,
+      childIsInTheForeground: childIsInTheForeground,
       alignment: alignment, paintStyle: paintStyle,
+      // inkWell: inkWell,
       child: child,
     );
+
+    final c = expandImage
+        ? Oval._(
+            isConstraintTransparent: true,
+            shouldExpand: false,
+            shrinkToClippedSize: false,
+            paintStyle: null,
+            shouldClosePath: false,
+            color: Colors.transparent,
+            child: SizedBox(
+              width: shouldExpand ? (child as Image).width : null,
+              child: FittedBox(
+                child: widget,
+              ),
+            ),
+          )
+        : widget;
+
+    // return c;
+    if (inkWell != null) {
+      return Oval._(
+        isConstraintTransparent: true,
+        shouldExpand: false,
+        shrinkToClippedSize: false,
+        paintStyle: null,
+        shouldClosePath: false,
+        color: Colors.transparent,
+        child: MyStack(
+          children: [
+            c,
+            Oval._(
+              key: key,
+              color: Colors.transparent,
+              width: width,
+              height: height,
+              shouldExpand: false,
+              startAngle: startAngle,
+              swipeAngle: swipeAngle,
+              clipBehavior: Clip.antiAlias,
+              shouldClosePath: shouldClosePathToCenter,
+              paintStyle: paintStyle,
+              child: _wrapWithInkWell(inkWell),
+            )
+          ],
+        ),
+      );
+    }
+    return c;
   }
 
-  factory Oval.circle({
+  static Widget circle({
     Color? color,
     double? radius,
+    bool shouldExpand = false,
     double? startAngle,
     double? swipeAngle,
     bool? shouldClosePathToCenter,
     List<BoxShadow> boxShadow = const [],
     Widget? child,
     Clip clipBehavior = Clip.none,
-    bool clipShrink = true,
+    bool shrinkToClippedSize = true,
     AlignmentGeometry alignment = Alignment.center,
-    bool isOverlay = true,
+    bool childIsInTheForeground = true,
     PaintStyle? paintStyle,
+    InkWell? inkWell,
     Key? key,
   }) {
-    return Oval._(
+    final expandImage = shouldExpandImage(child, radius, radius);
+    final widget = Oval._(
       key: key,
       color: color,
       width: radius != null ? radius * 2 : null,
       height: radius != null ? radius * 2 : null,
       squareSide: radius ?? -1,
+      shouldExpand: expandImage ? false : shouldExpand,
       startAngle: startAngle,
       swipeAngle: swipeAngle,
       shouldClosePath: shouldClosePathToCenter,
       shadow: boxShadow,
       clipBehavior: clipBehavior,
-      clipShrink: clipShrink,
-      isOverlay: !isOverlay,
+      shrinkToClippedSize: shrinkToClippedSize,
+      childIsInTheForeground: childIsInTheForeground,
       alignment: alignment,
       paintStyle: paintStyle,
+      // inkWell: inkWell,
       child: child,
     );
+
+    final c = expandImage
+        ? SizedBox(
+            width: shouldExpand ? (child as Image).width : null,
+            child: FittedBox(
+              child: widget,
+            ),
+          )
+        : widget;
+    if (inkWell != null) {
+      return MyStack(
+        children: [
+          c,
+          Oval._(
+            key: key,
+            color: Colors.transparent,
+            width: radius != null ? radius * 2 : null,
+            height: radius != null ? radius * 2 : null,
+            squareSide: radius ?? -1,
+            shouldExpand: false,
+            startAngle: startAngle,
+            swipeAngle: swipeAngle,
+            clipBehavior: Clip.antiAlias,
+            shouldClosePath: shouldClosePathToCenter,
+            paintStyle: paintStyle,
+            child: _wrapWithInkWell(inkWell),
+          )
+        ],
+      );
+    }
+    return c;
   }
 
   final double? startAngle, swipeAngle;
   final bool? shouldClosePath;
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return _RenderCircle(
+    return _RenderOval(
       color: color,
       width: width,
       height: height,
+      shouldExpand: shouldExpand,
       side: squareSide,
       startAngle: startAngle,
       swipeAngle: swipeAngle,
       boxShadow: shadow,
       buildContext: context,
       clipBehavior: clipBehavior,
-      clipShrink: clipShrink,
-      isOverlay: isOverlay,
+      shrinkToClippedSize: shrinkToClippedSize,
+      childIsInTheForeground: childIsInTheForeground,
       shouldClosePath: shouldClosePath,
       alignment: alignment,
       decorationImage: decorationImage,
       imageSize: imageSize,
       paintStyle: paintStyle,
+      isConstraintTransparent: isConstraintTransparent,
     );
   }
 
   @override
   void updateRenderObject(BuildContext context, RenderObject renderObject) {
     super.updateRenderObject(context, renderObject);
-    (renderObject as _RenderCircle)
+    (renderObject as _RenderOval)
       ..startAngle = startAngle
       ..squareSide = squareSide
       ..swipeAngle = swipeAngle
@@ -134,24 +263,26 @@ class Oval extends _BaseSingleChildRenderObjectShape {
   }
 }
 
-class _RenderCircle extends _BaseRenderShape {
-  _RenderCircle({
+class _RenderOval extends _BaseRenderShape {
+  _RenderOval({
     required double? side,
     required double? startAngle,
     required double? swipeAngle,
     required bool? shouldClosePath,
     required super.width,
     required super.height,
+    required super.shouldExpand,
     required super.color,
     required super.boxShadow,
     required super.clipBehavior,
-    required super.clipShrink,
+    required super.shrinkToClippedSize,
     required super.buildContext,
-    required super.isOverlay,
+    required super.childIsInTheForeground,
     required super.alignment,
     required super.decorationImage,
     required super.imageSize,
     required super.paintStyle,
+    required super.isConstraintTransparent,
   })  : _startAngle = startAngle,
         _swipeAngle = swipeAngle,
         _shouldClosePath = shouldClosePath,
@@ -191,9 +322,8 @@ class _RenderCircle extends _BaseRenderShape {
 
   @override
   Rect? getCircleToPaint(Rect rect) {
-    final start = (_startAngle ?? 0) - pi / 2;
     final swipe = _swipeAngle ?? (2 * pi - (_startAngle ?? 0));
-    if ((swipe - start) < 2 * pi) {
+    if (swipe < 2 * pi) {
       return null;
     }
     if (_squareSide != null) {
@@ -207,11 +337,14 @@ class _RenderCircle extends _BaseRenderShape {
   Path? getPathToPaint(Rect rect, Offset offset, bool shouldClosePath) {
     final start = (_startAngle ?? 0) - pi / 2;
     final swipe = _swipeAngle ?? (2 * pi - (_startAngle ?? 0));
-    if ((swipe - start) >= 2 * pi) {
+    if (swipe >= 2 * pi) {
       return null;
     }
 
     final path = Path();
+    if (swipe == 0) {
+      return path;
+    }
     path.addArc(
       rect,
       start,
@@ -219,11 +352,11 @@ class _RenderCircle extends _BaseRenderShape {
     );
     if (_shouldClosePath != null) {
       if (_shouldClosePath!) {
-        path.lineTo(offset.dx + offsetX, offset.dy + offsetY);
+        path.lineTo(offset.dx + centerX, offset.dy + centerY);
         path.close();
       }
     } else if (shouldClosePath) {
-      path.lineTo(offset.dx + offsetX, offset.dy + offsetY);
+      path.lineTo(offset.dx + centerX, offset.dy + centerY);
       path.close();
     }
     return path;
