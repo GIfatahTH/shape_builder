@@ -10,76 +10,162 @@ class RRectangle extends _BaseSingleChildRenderObjectShape {
     super.color,
     super.width,
     super.height,
+    required super.shouldExpand,
     super.child,
     super.shadow = const [],
-    super.isOverlay = false,
+    super.childIsInTheForeground = true,
     super.clipBehavior = Clip.none,
-    required super.clipShrink,
+    required super.shrinkToClippedSize,
     super.alignment = Alignment.center,
     required super.paintStyle,
+    super.isConstraintTransparent = false,
+    required super.fit,
     super.key,
   });
 
-  factory RRectangle.square({
+  static Widget square({
     BorderRadiusGeometry? borderRadius,
     BorderRadiusGeometry? outerVBorderRadius,
     BorderRadiusGeometry? outerHBorderRadius,
     double? side,
+    bool shouldExpand = false,
     Color? color,
     List<BoxShadow> boxShadow = const [],
     Widget? child,
     AlignmentGeometry alignment = Alignment.center,
     Clip clipBehavior = Clip.none,
-    bool clipShrink = true,
-    bool isOverlay = true,
+    bool shrinkToClippedSize = true,
+    bool childIsInTheForeground = true,
     PaintStyle? paintStyle,
+    InkWell? inkWell,
+    BoxFit fit = BoxFit.none,
     Key? key,
-  }) =>
-      RRectangle._(
-        key: key,
-        radius: borderRadius,
-        outerVRadius: outerVBorderRadius,
-        outerHRadius: outerHBorderRadius,
-        color: color,
-        shadow: boxShadow,
-        width: side,
-        height: side,
-        squareSide: side ?? -1,
-        clipBehavior: clipBehavior,
-        clipShrink: clipShrink,
-        isOverlay: !isOverlay,
-        alignment: alignment,
-        paintStyle: paintStyle,
-        child: child,
-      );
+  }) {
+    final expandImage = shouldExpandImage(child, side, side);
 
-  factory RRectangle.capsule({
+    final widget = RRectangle._(
+      key: key,
+      radius: borderRadius,
+      outerVRadius: outerVBorderRadius,
+      outerHRadius: outerHBorderRadius,
+      color: color,
+      shadow: boxShadow,
+      width: side,
+      height: side,
+      squareSide: side ?? -1,
+      shouldExpand: expandImage ? false : shouldExpand,
+      clipBehavior: clipBehavior,
+      shrinkToClippedSize: shrinkToClippedSize,
+      childIsInTheForeground: childIsInTheForeground,
+      alignment: alignment,
+      paintStyle: paintStyle,
+      fit: fit,
+      child: child,
+    );
+
+    final c = expandImage
+        ? SizedBox(
+            width: shouldExpand ? (child as Image).width : null,
+            child: FittedBox(
+              child: widget,
+            ),
+          )
+        : widget;
+
+    if (inkWell != null) {
+      return MyStack(
+        children: [
+          c,
+          RRectangle._(
+            key: key,
+            color: Colors.transparent,
+            width: side,
+            height: side,
+            squareSide: side ?? -1,
+            radius: borderRadius,
+            outerVRadius: outerVBorderRadius,
+            outerHRadius: outerHBorderRadius,
+            shouldExpand: false,
+            clipBehavior: Clip.antiAlias,
+            shrinkToClippedSize: shrinkToClippedSize,
+            paintStyle: paintStyle,
+            fit: BoxFit.none,
+            alignment: alignment,
+            child: _wrapWithInkWell(inkWell),
+          )
+        ],
+      );
+    }
+    return c;
+  }
+
+  static Widget capsule({
     double? width,
     double? height,
+    bool shouldExpand = false,
     Color? color,
     List<BoxShadow> boxShadow = const [],
     Widget? child,
     AlignmentGeometry alignment = Alignment.center,
     Clip clipBehavior = Clip.none,
-    bool clipShrink = true,
-    bool isOverlay = true,
+    bool shrinkToClippedSize = true,
+    bool childIsInTheForeground = true,
     PaintStyle? paintStyle,
+    InkWell? inkWell,
+    BoxFit fit = BoxFit.none,
     Key? key,
-  }) =>
-      RRectangle._(
-        key: key,
-        radius: _RadiusCapsule(),
-        color: color,
-        shadow: boxShadow,
-        width: width,
-        height: height,
-        clipBehavior: clipBehavior,
-        clipShrink: clipShrink,
-        isOverlay: !isOverlay,
-        alignment: alignment,
-        paintStyle: paintStyle,
-        child: child,
+  }) {
+    final expandImage = shouldExpandImage(child, width, height);
+
+    final widget = RRectangle._(
+      key: key,
+      radius: _RadiusCapsule(),
+      color: color,
+      shadow: boxShadow,
+      width: width,
+      height: height,
+      shouldExpand: expandImage ? false : shouldExpand,
+      clipBehavior: clipBehavior,
+      shrinkToClippedSize: shrinkToClippedSize,
+      childIsInTheForeground: childIsInTheForeground,
+      alignment: alignment,
+      paintStyle: paintStyle,
+      fit: fit,
+      child: child,
+    );
+
+    final c = expandImage
+        ? SizedBox(
+            width: shouldExpand ? (child as Image).width : null,
+            child: FittedBox(
+              child: widget,
+            ),
+          )
+        : widget;
+
+    if (inkWell != null) {
+      return MyStack(
+        children: [
+          c,
+          RRectangle._(
+            key: key,
+            color: Colors.transparent,
+            width: width,
+            height: height,
+            radius: _RadiusCapsule(),
+            shouldExpand: false,
+            clipBehavior: Clip.antiAlias,
+            shrinkToClippedSize: shrinkToClippedSize,
+            paintStyle: paintStyle,
+            fit: BoxFit.none,
+            alignment: alignment,
+            child: _wrapWithInkWell(inkWell),
+          )
+        ],
       );
+    }
+    return c;
+  }
 
   factory RRectangle({
     Color? color,
@@ -88,31 +174,91 @@ class RRectangle extends _BaseSingleChildRenderObjectShape {
     List<BoxShadow> boxShadow = const [],
     double? width,
     double? height,
+    bool shouldExpand = false,
     BorderRadiusGeometry? borderRadius,
     Widget? child,
     AlignmentGeometry alignment = Alignment.center,
     Clip clipBehavior = Clip.none,
-    bool clipShrink = true,
-    bool isOverlay = true,
+    bool shrinkToClippedSize = true,
+    bool childIsInTheForeground = true,
     PaintStyle? paintStyle,
+    InkWell? inkWell,
+    BoxFit fit = BoxFit.none,
     Key? key,
   }) {
-    return RRectangle._(
+    final expandImage = shouldExpandImage(child, width, height);
+
+    final widget = RRectangle._(
       key: key,
       color: color,
       shadow: boxShadow,
       width: width,
       height: height,
+      shouldExpand: expandImage ? false : shouldExpand,
       radius: borderRadius,
       outerVRadius: outerVBorderRadius,
       outerHRadius: outerHBorderRadius,
       clipBehavior: clipBehavior,
-      clipShrink: clipShrink,
-      isOverlay: !isOverlay,
+      shrinkToClippedSize: shrinkToClippedSize,
+      childIsInTheForeground: childIsInTheForeground,
       alignment: alignment,
       paintStyle: paintStyle,
+      fit: fit,
       child: child,
     );
+    final c = expandImage
+        ? RRectangle._(
+            isConstraintTransparent: true,
+            shouldExpand: false,
+            shrinkToClippedSize: false,
+            paintStyle: null,
+            color: Colors.transparent,
+            fit: BoxFit.none,
+            child: SizedBox(
+              width:
+                  shouldExpand && expandImage ? (child as Image).width : null,
+              child: FittedBox(
+                // fit: fit,
+                child: widget,
+              ),
+            ),
+          )
+        : widget;
+
+    if (inkWell != null) {
+      return RRectangle._(
+        isConstraintTransparent: true,
+        shouldExpand: false,
+        shrinkToClippedSize: false,
+        paintStyle: null,
+        color: Colors.transparent,
+        fit: BoxFit.none,
+        child: MyStack(
+          children: [
+            c,
+            Align(
+              alignment: alignment,
+              child: RRectangle._(
+                key: key,
+                color: Colors.transparent,
+                width: width,
+                height: height,
+                radius: borderRadius,
+                outerVRadius: outerVBorderRadius,
+                outerHRadius: outerHBorderRadius,
+                shouldExpand: false,
+                clipBehavior: Clip.antiAlias,
+                shrinkToClippedSize: shrinkToClippedSize,
+                paintStyle: paintStyle,
+                fit: BoxFit.none,
+                child: _wrapWithInkWell(inkWell),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return c;
   }
 
   final BorderRadiusGeometry? radius, outerVRadius, outerHRadius;
@@ -125,17 +271,19 @@ class RRectangle extends _BaseSingleChildRenderObjectShape {
       width: width,
       height: height,
       squareSide: squareSide,
+      shouldExpand: shouldExpand,
       buildContext: context,
       radius: radius,
       outerVRadius: outerVRadius,
       outerHRadius: outerHRadius,
       clipBehavior: clipBehavior,
-      clipShrink: clipShrink,
-      isOverlay: isOverlay,
+      shrinkToClippedSize: shrinkToClippedSize,
+      childIsInTheForeground: childIsInTheForeground,
       alignment: alignment,
       decorationImage: decorationImage,
       imageSize: imageSize,
       paintStyle: paintStyle,
+      isConstraintTransparent: isConstraintTransparent,
     );
   }
 
@@ -169,16 +317,18 @@ class _RenderRRectangle extends _BaseRenderShape {
     required super.squareSide,
     required super.width,
     required super.height,
+    required super.shouldExpand,
     required super.color,
     required super.boxShadow,
     required super.clipBehavior,
-    required super.clipShrink,
+    required super.shrinkToClippedSize,
     required super.buildContext,
-    required super.isOverlay,
+    required super.childIsInTheForeground,
     required super.alignment,
     required super.decorationImage,
     required super.imageSize,
     required super.paintStyle,
+    required super.isConstraintTransparent,
   })  : _radius = radius,
         _outerVRadius = outerVRadius,
         _outerHRadius = outerHRadius;

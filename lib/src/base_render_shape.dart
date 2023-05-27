@@ -4,45 +4,48 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:shape_builder/src/paint_style.dart';
-
-import 'gradient_color.dart';
+import 'package:shape_builder/shape_builder.dart';
 
 part 'base_single_child_render_shape.dart';
+part 'colorize.dart';
 part 'oval.dart';
 part 'rectangle.dart';
 part 'rounded_rectangle.dart';
+part 'shape_builder.dart';
 
 abstract class _BaseRenderShape extends RenderAligningShiftedBox {
   _BaseRenderShape({
     required double? width,
     required double? height,
+    required bool shouldExpand,
     required Color? color,
     required List<BoxShadow> boxShadow,
     required Clip clipBehavior,
-    required bool clipShrink,
+    required bool shrinkToClippedSize,
     required this.buildContext,
-    required bool isOverlay,
+    required bool childIsInTheForeground,
     required AlignmentGeometry alignment,
     required DecorationImage? decorationImage,
     required double? squareSide,
     required Size? imageSize,
     required PaintStyle? paintStyle,
+    required this.isConstraintTransparent,
   })  : _color = color,
         _width = width,
         _height = height,
+        _shouldExpand = shouldExpand,
         _boxShadow = boxShadow,
         _clipBehavior = clipBehavior,
-        _clipShrink = clipShrink,
-        _isOverlay = isOverlay,
+        _shrinkToClippedSize = shrinkToClippedSize,
+        _childIsInTheForeground = childIsInTheForeground,
         _alignment = alignment,
-        _decorationImage = decorationImage,
         _squareSide = squareSide,
         _imageSize = imageSize,
         _paintStyle = paintStyle,
         super(textDirection: TextDirection.ltr);
 
   final BuildContext buildContext;
+  final bool isConstraintTransparent;
 
   List<BoxShadow> _boxShadow;
   set boxShadow(List<BoxShadow> value) {
@@ -80,14 +83,14 @@ abstract class _BaseRenderShape extends RenderAligningShiftedBox {
     markNeedsPaint();
   }
 
-  bool _clipShrink;
-  set clipShrink(bool value) {
-    if (value == _clipShrink) {
+  bool _shrinkToClippedSize;
+  set shrinkToClippedSize(bool value) {
+    if (value == _shrinkToClippedSize) {
       return;
     }
-    _clipShrink = value;
+    _shrinkToClippedSize = value;
     resetPainters();
-    markNeedsPaint();
+    markNeedsLayout();
   }
 
   double? _width;
@@ -97,7 +100,7 @@ abstract class _BaseRenderShape extends RenderAligningShiftedBox {
     }
     _width = value;
     resetPainters();
-    markNeedsPaint();
+    markNeedsLayout();
   }
 
   double? _height;
@@ -107,15 +110,25 @@ abstract class _BaseRenderShape extends RenderAligningShiftedBox {
     }
     _height = value;
     resetPainters();
+    markNeedsLayout();
+  }
+
+  bool _shouldExpand;
+  set shouldExpand(bool value) {
+    if (value == _shouldExpand) {
+      return;
+    }
+    _shouldExpand = value;
+    resetPainters();
     markNeedsPaint();
   }
 
-  bool _isOverlay;
-  set isOverlay(bool value) {
-    if (value == _isOverlay) {
+  bool _childIsInTheForeground;
+  set childIsInTheForeground(bool value) {
+    if (value == _childIsInTheForeground) {
       return;
     }
-    _isOverlay = value;
+    _childIsInTheForeground = value;
     resetPainters();
     markNeedsPaint();
   }
@@ -142,17 +155,6 @@ abstract class _BaseRenderShape extends RenderAligningShiftedBox {
     markNeedsPaint();
   }
 
-  DecorationImage? _decorationImage;
-  set decorationImage(DecorationImage? value) {
-    if (value == _decorationImage) {
-      return;
-    }
-    _decorationImage = value;
-
-    resetPainters();
-    markNeedsPaint();
-  }
-
   double? _squareSide;
   set squareSide(double? value) {
     if (value == _squareSide) {
@@ -173,8 +175,8 @@ abstract class _BaseRenderShape extends RenderAligningShiftedBox {
     markNeedsPaint();
   }
 
-  double offsetX = 0.0;
-  double offsetY = 0.0;
+  double centerX = 0.0;
+  double centerY = 0.0;
 
   _ShapePainter? _painter;
 
@@ -213,6 +215,15 @@ abstract class _BaseRenderShape extends RenderAligningShiftedBox {
     BoxConstraints c, {
     required bool parentUseSize,
   }) {
+    if (isConstraintTransparent) {
+      assert(child != null);
+      child!.layout(c, parentUsesSize: true);
+      return child!.size;
+    }
+    _width ??= _shouldExpand ? double.infinity : _width;
+    _height ??= _shouldExpand ? double.infinity : _height;
+    _squareSide ??=
+        _squareSide != null && _shouldExpand ? double.infinity : _squareSide;
     var width = c.hasTightWidth ? c.minWidth : _width;
     var height = c.hasTightHeight ? c.minHeight : _height;
     Size? drySize;
@@ -223,56 +234,27 @@ abstract class _BaseRenderShape extends RenderAligningShiftedBox {
           _imageSize!.height != -1 ? _imageSize!.height : height ?? c.maxHeight,
         ),
       );
-
-      // if (_squareSide != null && !c.isTight) {
-      //   dd = Size.square(
-      //     c.hasTightWidth
-      //         ? c.maxWidth
-      //         : c.hasTightHeight
-      //             ? c.maxHeight
-      //             : dd.shortestSide,
-      //   );
-      // }
-
-      // var constraints = c.tighten(
-      //   width: dd.width,
-      //   height: dd.height,
-      // );
-
-      // final w = _imageSize!.width == -1
-      //     ? constraints.maxWidth
-      //     : min(_imageSize!.width, c.maxWidth);
-      // final h = _imageSize!.height == -1
-      //     ? constraints.maxHeight
-      //     : min(_imageSize!.height, c.maxHeight);
       child!.layout(
-        // _imageSize == const Size(-1, -1) || true
-        // ? BoxConstraints(
-        //     minWidth: w,
-        //     maxWidth: w,
-        //     minHeight: h,
-        //     maxHeight: h,
-        //   )
-        // :
-        BoxConstraints.tight(dd),
+        _imageSize == const Size(-1, -1)
+            ? dd.isFinite
+                ? BoxConstraints.tight(dd)
+                : BoxConstraints.loose(dd) // Test me
+            : BoxConstraints(
+                maxWidth: _imageSize!.width != -1 ? dd.width : c.maxWidth,
+                minWidth: width != null ? dd.width : c.minWidth,
+                maxHeight: _imageSize!.height != -1 ? dd.height : c.maxHeight,
+                minHeight: height != null ? dd.height : c.minHeight,
+              ),
         parentUsesSize: true,
       );
       drySize = child!.size;
-      // if (width == null) {
-      //   width = drySize.width;
-      //   _imageSize = Size(width, _imageSize!.height);
-      // }
-      // if (height == null) {
-      //   height = drySize.height;
-      //   _imageSize = Size(_imageSize!.width, height);
-      // }
       if (_imageSize == const Size(-1, -1)) {
         sizeToPaint = drySize;
       } else {
         final widthFactor =
             _imageSize!.width == -1 ? 1 : drySize.width / _imageSize!.width;
-        final heightFactor =
-            _imageSize!.height == -1 ? 1 : drySize.height / _imageSize!.height;
+        // final heightFactor =
+        //     _imageSize!.height == -1 ? 1 : drySize.height / _imageSize!.height;
         sizeToPaint = Size(
           _width != null ? _width! * widthFactor : drySize.width,
           _height != null ? _height! * widthFactor : drySize.height,
@@ -288,8 +270,7 @@ abstract class _BaseRenderShape extends RenderAligningShiftedBox {
         }
       }
     } else {
-      var dd = c
-          .constrain(Size(width ?? double.infinity, height ?? double.infinity));
+      var dd = c.constrain(Size(width ?? 0.0, height ?? 0.0));
 
       if (_squareSide != null && !c.isTight) {
         dd = Size.square(
@@ -339,7 +320,7 @@ abstract class _BaseRenderShape extends RenderAligningShiftedBox {
     );
     this.drySize = drySize;
 
-    return _clipBehavior == Clip.none || !_clipShrink
+    return _clipBehavior == Clip.none || !_shrinkToClippedSize
         ? drySize
         : Size(
             c.hasTightWidth ? c.minWidth : sizeToPaint.width,
@@ -364,6 +345,10 @@ abstract class _BaseRenderShape extends RenderAligningShiftedBox {
   @override
   void paint(PaintingContext context, Offset offset) {
     if (size == Size.zero) return;
+    if (isConstraintTransparent) {
+      context.paintChild(child!, offset);
+      return;
+    }
     final effectiveRect = getEffectiveRect(offset);
     bool recreate =
         _painter == null || effectiveRect != _painter!.effectiveRect;
@@ -396,29 +381,21 @@ abstract class _BaseRenderShape extends RenderAligningShiftedBox {
   Rect getEffectiveRect(Offset offset) {
     double width = sizeToPaint.width;
     double height = sizeToPaint.height;
-    // print(child!.size);
-    // final s = _clipBehavior == Clip.none ? size : (child?.size ?? size);
-    // final s = _clipBehavior == Clip.none ? size : drySize;
-    final s = size;
 
     _resolvedAlignment =
         _alignment.resolve(Directionality.maybeOf(buildContext));
 
-    final x = _resolvedAlignment!.x;
-    offsetX = (s.width * x + s.width + -x.sign * width) / 2;
-    final y = _resolvedAlignment!.y;
-    offsetY = (s.height * y + s.height - y.sign * height) / 2;
-
-    if (child != null && _clipShrink) {
+    if (child != null && _shrinkToClippedSize) {
       alignChild();
     }
 
-    return Rect.fromCenter(
-      center: offset + Offset(offsetX, offsetY),
-      // center: offset,
-      width: width,
-      height: height,
+    final rect = _resolvedAlignment!.inscribe(
+      Size(width, height),
+      Rect.fromLTWH(offset.dx, offset.dy, size.width, size.height),
     );
+    centerX = rect.center.dx - offset.dx;
+    centerY = rect.center.dy - offset.dy;
+    return rect;
   }
 }
 
@@ -442,28 +419,30 @@ class _ShapePainter {
       }
       painter.shader =
           (color as ColorWithGradient).gradient.createShader(effectiveRect);
-    } else {
-      if (color is ColorWithBlendMode) {
+    } else if (color is ColorWithBlendMode) {
+      painter.color = (color as ColorWithBlendMode).blendColor;
+      if ((color as ColorWithBlendMode).blendMode != null) {
         painter.blendMode = (color as ColorWithBlendMode).blendMode!;
       }
+    } else {
       painter.color = color;
-      if (paintStyle?.style != null) {
-        painter.style = paintStyle!.style!;
-      }
-      if (paintStyle?.strokeWidth != null) {
-        painter.strokeWidth = paintStyle!.strokeWidth!;
-      }
+    }
+    if (paintStyle?.style != null) {
+      painter.style = paintStyle!.style!;
+    }
+    if (paintStyle?.strokeWidth != null) {
+      painter.strokeWidth = paintStyle!.strokeWidth!;
+    }
 
-      if (paintStyle?.strokeCap != null) {
-        painter.strokeCap = paintStyle!.strokeCap!;
-      }
+    if (paintStyle?.strokeCap != null) {
+      painter.strokeCap = paintStyle!.strokeCap!;
+    }
 
-      if (paintStyle?.strokeMiterLimit != null) {
-        painter.strokeMiterLimit = paintStyle!.strokeMiterLimit!;
-      }
-      if (paintStyle?.strokeJoin != null) {
-        painter.strokeJoin = paintStyle!.strokeJoin!;
-      }
+    if (paintStyle?.strokeMiterLimit != null) {
+      painter.strokeMiterLimit = paintStyle!.strokeMiterLimit!;
+    }
+    if (paintStyle?.strokeJoin != null) {
+      painter.strokeJoin = paintStyle!.strokeJoin!;
     }
   }
 
@@ -578,40 +557,33 @@ class _ShapePainter {
 
   DecorationImagePainter? _imagePainter;
   void _paintBackgroundImageOrChild(PaintingContext context) {
-    final image = renderShape._decorationImage;
     final child = renderShape.child;
 
-    if (image == null) {
-      if (child != null) {
-        if (renderShape._clipShrink) {
-          final BoxParentData childParentData =
-              child.parentData! as BoxParentData;
-          context.paintChild(child, childParentData.offset + offset);
-          return;
-        }
-        context.paintChild(child, offset);
-      }
+    if (child == null) {
       return;
     }
-    _imagePainter ??= image.createPainter(onChanged);
-    _imagePainter!.paint(
-      context.canvas,
-      effectiveRect,
-      pathToPaint,
-      createLocalImageConfiguration(
-        renderShape.buildContext,
-        size: renderShape.size,
-      ),
-    );
+    if (renderShape._shrinkToClippedSize) {
+      final BoxParentData childParentData = child.parentData! as BoxParentData;
+      context.paintChild(child, childParentData.offset + offset);
+      return;
+    }
+    context.paintChild(child, offset);
   }
 
   void dispose() {
     _imagePainter?.dispose();
   }
 
-  void _performPaint(PaintingContext context, Offset _) {
-    _paintShadows(context.canvas);
-    if (renderShape._isOverlay) {
+  void _performPaint(
+    PaintingContext context,
+    Offset _, [
+    bool paintShadow = false,
+  ]) {
+    if (paintShadow) {
+      // TODO Test me
+      _paintShadows(context.canvas);
+    }
+    if (!renderShape._childIsInTheForeground) {
       _paintBackgroundImageOrChild(context);
     }
 
@@ -628,15 +600,16 @@ class _ShapePainter {
       context.canvas.drawPath(pathToPaint!, painter);
     }
 
-    if (!renderShape._isOverlay) {
+    if (renderShape._childIsInTheForeground) {
       _paintBackgroundImageOrChild(context);
     }
   }
 
   void paint(PaintingContext context, Offset offset) {
     if (renderShape._clipBehavior == Clip.none) {
-      _performPaint(context, offset);
+      _performPaint(context, offset, true);
     } else {
+      _paintShadows(context.canvas);
       if (rectToPaint != null) {
         context.clipRectAndPaint(
           rectToPaint!,

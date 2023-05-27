@@ -32,8 +32,10 @@ class ColorWithGradient extends Color {
 }
 
 class ColorWithBlendMode extends Color {
-  ColorWithBlendMode(Color color, this.blendMode) : super(color.value);
-
+  ColorWithBlendMode(Color color, this.blendMode)
+      : blendColor = color,
+        super(color.value);
+  final Color blendColor;
   final BlendMode? blendMode;
 
   @override

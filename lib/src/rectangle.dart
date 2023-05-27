@@ -1,69 +1,111 @@
 part of 'base_render_shape.dart';
 
+/// {@macro rectangle}
 class Rectangle extends _BaseSingleChildRenderObjectShape {
   Rectangle._({
     super.squareSide,
     super.color,
     super.width,
     super.height,
+    required super.shouldExpand,
     super.child,
     super.shadow = const [],
-    super.isOverlay = false,
+    super.childIsInTheForeground = true,
     super.clipBehavior = Clip.none,
-    super.clipShrink = true,
+    super.shrinkToClippedSize = true,
     super.alignment = Alignment.center,
     required super.paintStyle,
+    super.isConstraintTransparent = false,
+    required super.fit,
     super.key,
   });
 
   /// Similar to [Rectangle] but it draws a square of side equal to the give
-  /// side parameter
-  factory Rectangle.square({
+  /// `side` parameter
+  ///
+  ///
+  static Widget square({
     double? side,
     //
+    bool shouldExpand = false,
     Color? color,
     List<BoxShadow> boxShadow = const [],
     PaintStyle? paintStyle,
     //
     Widget? child,
     AlignmentGeometry alignment = Alignment.center,
-    bool isOverlay = true,
+    bool childIsInTheForeground = true,
     //
     Clip clipBehavior = Clip.none,
-    bool clipShrink = true,
+    bool shrinkToClippedSize = true,
+    InkWell? inkWell,
+    BoxFit fit = BoxFit.none,
     Key? key,
-  }) =>
-      Rectangle._(
-        key: key,
-        color: color,
-        shadow: boxShadow,
-        width: side,
-        height: side,
-        squareSide: side ?? -1,
-        clipBehavior: clipBehavior,
-        clipShrink: clipShrink,
-        isOverlay: !isOverlay,
-        alignment: alignment,
-        paintStyle: paintStyle,
-        child: child,
-      );
+  }) {
+    final expandImage = shouldExpandImage(child, side, side);
 
+    final widget = Rectangle._(
+      key: key,
+      color: color,
+      shadow: boxShadow,
+      width: side,
+      height: side,
+      squareSide: side ?? -1,
+      shouldExpand: expandImage ? false : shouldExpand,
+      clipBehavior: clipBehavior,
+      shrinkToClippedSize: shrinkToClippedSize,
+      childIsInTheForeground: childIsInTheForeground,
+      alignment: alignment,
+      paintStyle: paintStyle,
+      fit: fit,
+      child: child,
+    );
+
+    final c = expandImage
+        ? SizedBox(
+            width: shouldExpand ? (child as Image).width : null,
+            child: FittedBox(
+              child: widget,
+            ),
+          )
+        : widget;
+    if (inkWell != null) {
+      return MyStack(
+        children: [
+          c,
+          Rectangle._(
+            key: key,
+            color: Colors.transparent,
+            width: side,
+            height: side,
+            squareSide: side ?? -1,
+            shouldExpand: false,
+            clipBehavior: Clip.antiAlias,
+            paintStyle: paintStyle,
+            fit: BoxFit.none,
+            alignment: alignment,
+            child: _wrapWithInkWell(inkWell),
+          )
+        ],
+      );
+    }
+    return c;
+  }
+
+  /// {@template rectangle}
   /// A Rectangle shape.
   ///
   /// See: [Rectangle.square], [RRectangle] and [Oval]
+
+  /// ## Shape layout
+  /// shapes trie to size itself, in the following order:
+  /// * to honor the `width`, `height`,
+  /// * to be as big as possible if the parameter `shouldExpand` is set to true,
+  /// (FILL PARENT),
+  /// * to ba as small as it child if the latter is defined (WRAP CHILD),
+  /// * to be as small as possible.
   ///
-  /// ## Size of the shape
-  /// * If no child is provided, The shape tends to expand to fill the max
-  /// constraints imposed by its parent widget (FILL PARENT).
-  /// * If child is provided, the shape takes the size of the child
-  /// (WRAP CHILD)
-  /// * If width or height are provided, the shape fits the given width and
-  /// height.
-  ///
-  /// You can set the width and/or height to double.infinity so that the
-  /// shape takes all available space.
-  ///
-  /// ## Color, gradient and shadow of the Rectangle
+  /// ## Color, gradient and shadow of the Shapes
   /// * The color defaults to Primary color.
   /// * To use gradient set the color property to [ColorWithGradient] .
   ///
@@ -88,12 +130,12 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
   ///    return Rectangle(
   ///             width: 100,
   ///             height: 80,
-  ///            boxShadow: BoxShadowWithElevation(3),
+  ///             boxShadow: BoxShadowWithElevation(3),
   ///      );
   ///   ```
   /// ## Painting Style
   /// You can define the style to use when drawing Shapes by defining the
-  /// paintStyle parameter.
+  /// [paintStyle] parameter.
   ///
   /// Example:
   ///  ```
@@ -107,45 +149,98 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
   ///   );
   ///  ```
   /// ## child, alignment and overlay
-  /// Use the child parameter to define the Widget to be displayed inside the
+  /// Use the [child] parameter to define the Widget to be displayed inside the
   /// shape and align it using the alignment parameter.
   ///
   /// By default the the child is displayed if the foreground of the shape. But
-  /// if you set isOverlay parameter to false, the child is displayed in the
+  /// if you set [childIsInTheForeground] parameter to false, the child is displayed in the
   /// background
   ///
   /// ## Clip the chid
   /// Use clipBehavior parameter to clip the child to the shape.
   ///
+  /// {@endtemplate}
   factory Rectangle({
     double? width,
     double? height,
     //
+    bool shouldExpand = false,
     Color? color,
     List<BoxShadow> boxShadow = const [],
     PaintStyle? paintStyle,
     //
     Widget? child,
     AlignmentGeometry alignment = Alignment.center,
-    bool isOverlay = true,
+    bool childIsInTheForeground = true,
     //
     Clip clipBehavior = Clip.none,
-    bool clipShrink = true,
+    bool shrinkToClippedSize = true,
+    InkWell? inkWell,
+    BoxFit fit = BoxFit.none,
     Key? key,
   }) {
-    return Rectangle._(
+    final expandImage = shouldExpandImage(child, width, height);
+
+    final widget = Rectangle._(
       key: key,
       color: color,
       shadow: boxShadow,
       width: width,
       height: height,
+      shouldExpand: expandImage ? false : shouldExpand,
       clipBehavior: clipBehavior,
-      clipShrink: clipShrink,
-      isOverlay: !isOverlay,
+      shrinkToClippedSize: shrinkToClippedSize,
+      childIsInTheForeground: childIsInTheForeground,
       alignment: alignment,
       paintStyle: paintStyle,
+      fit: fit,
       child: child,
     );
+
+    final c = expandImage
+        ? Rectangle._(
+            isConstraintTransparent: true,
+            shouldExpand: false,
+            shrinkToClippedSize: false,
+            paintStyle: null,
+            color: Colors.transparent,
+            fit: BoxFit.none,
+            child: SizedBox(
+              width: shouldExpand ? (child as Image).width : null,
+              child: FittedBox(
+                child: widget,
+              ),
+            ),
+          )
+        : widget;
+
+    if (inkWell != null) {
+      return Rectangle._(
+        isConstraintTransparent: true,
+        shouldExpand: false,
+        shrinkToClippedSize: false,
+        paintStyle: null,
+        color: Colors.transparent,
+        fit: BoxFit.none,
+        child: MyStack(
+          children: [
+            c,
+            Rectangle._(
+              key: key,
+              color: Colors.transparent,
+              width: width,
+              height: height,
+              shouldExpand: false,
+              paintStyle: paintStyle,
+              fit: BoxFit.none,
+              alignment: alignment,
+              child: _wrapWithInkWell(inkWell),
+            )
+          ],
+        ),
+      );
+    }
+    return c;
   }
 
   @override
@@ -156,14 +251,16 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
       width: width,
       height: height,
       squareSide: squareSide,
+      shouldExpand: shouldExpand,
       buildContext: context,
       clipBehavior: clipBehavior,
-      clipShrink: clipShrink,
-      isOverlay: isOverlay,
+      shrinkToClippedSize: shrinkToClippedSize,
+      childIsInTheForeground: childIsInTheForeground,
       alignment: alignment,
       decorationImage: decorationImage,
       imageSize: imageSize,
       paintStyle: paintStyle,
+      isConstraintTransparent: isConstraintTransparent,
     );
   }
 
@@ -185,16 +282,18 @@ class _RenderRectangle extends _BaseRenderShape {
     required super.squareSide,
     required super.width,
     required super.height,
+    required super.shouldExpand,
     required super.color,
     required super.boxShadow,
     required super.clipBehavior,
-    required super.clipShrink,
+    required super.shrinkToClippedSize,
     required super.buildContext,
-    required super.isOverlay,
+    required super.childIsInTheForeground,
     required super.alignment,
     required super.decorationImage,
     required super.imageSize,
     required super.paintStyle,
+    required super.isConstraintTransparent,
   });
 
   // double? _squareSide;

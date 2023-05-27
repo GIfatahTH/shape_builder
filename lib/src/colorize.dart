@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-
-import 'gradient_color.dart';
+part of 'base_render_shape.dart';
 
 class Colorize extends SingleChildRenderObjectWidget {
   /// Creates a widget that paints its area with the specified [Color].
