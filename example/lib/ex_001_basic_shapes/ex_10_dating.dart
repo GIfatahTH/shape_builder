@@ -84,7 +84,7 @@ class _MyHomePage extends StatelessWidget {
                                       ),
                                     )
                                     .buildRRect()
-                                    .padding
+                                    .paddingInsets
                                     .right()
                                 : Icon(
                                     Icons.info_outline,
@@ -114,7 +114,7 @@ class _MyHomePage extends StatelessWidget {
                   color: Colors.white,
                   hasGradient: true,
                   icon: Icons.favorite,
-                ).padding.horizontal(),
+                ).paddingInsets.horizontal(),
                 const ChoiceButton(
                   color: Color(0xFF2B2E4A),
                   icon: Icons.watch_later,

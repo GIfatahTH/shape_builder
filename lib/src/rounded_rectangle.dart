@@ -19,7 +19,7 @@ class RRectangle extends _BaseSingleChildRenderObjectShape {
     super.alignment = Alignment.center,
     required super.paintStyle,
     super.isConstraintTransparent = false,
-    super.inkWell,
+    required super.fit,
     super.key,
   });
 
@@ -38,6 +38,7 @@ class RRectangle extends _BaseSingleChildRenderObjectShape {
     bool childIsInTheForeground = true,
     PaintStyle? paintStyle,
     InkWell? inkWell,
+    BoxFit fit = BoxFit.none,
     Key? key,
   }) {
     final expandImage = shouldExpandImage(child, side, side);
@@ -58,7 +59,7 @@ class RRectangle extends _BaseSingleChildRenderObjectShape {
       childIsInTheForeground: childIsInTheForeground,
       alignment: alignment,
       paintStyle: paintStyle,
-      // inkWell: inkWell,
+      fit: fit,
       child: child,
     );
 
@@ -88,6 +89,8 @@ class RRectangle extends _BaseSingleChildRenderObjectShape {
             clipBehavior: Clip.antiAlias,
             shrinkToClippedSize: shrinkToClippedSize,
             paintStyle: paintStyle,
+            fit: BoxFit.none,
+            alignment: alignment,
             child: _wrapWithInkWell(inkWell),
           )
         ],
@@ -109,6 +112,7 @@ class RRectangle extends _BaseSingleChildRenderObjectShape {
     bool childIsInTheForeground = true,
     PaintStyle? paintStyle,
     InkWell? inkWell,
+    BoxFit fit = BoxFit.none,
     Key? key,
   }) {
     final expandImage = shouldExpandImage(child, width, height);
@@ -126,7 +130,7 @@ class RRectangle extends _BaseSingleChildRenderObjectShape {
       childIsInTheForeground: childIsInTheForeground,
       alignment: alignment,
       paintStyle: paintStyle,
-      // inkWell: inkWell,
+      fit: fit,
       child: child,
     );
 
@@ -153,6 +157,8 @@ class RRectangle extends _BaseSingleChildRenderObjectShape {
             clipBehavior: Clip.antiAlias,
             shrinkToClippedSize: shrinkToClippedSize,
             paintStyle: paintStyle,
+            fit: BoxFit.none,
+            alignment: alignment,
             child: _wrapWithInkWell(inkWell),
           )
         ],
@@ -177,6 +183,7 @@ class RRectangle extends _BaseSingleChildRenderObjectShape {
     bool childIsInTheForeground = true,
     PaintStyle? paintStyle,
     InkWell? inkWell,
+    BoxFit fit = BoxFit.none,
     Key? key,
   }) {
     final expandImage = shouldExpandImage(child, width, height);
@@ -196,7 +203,7 @@ class RRectangle extends _BaseSingleChildRenderObjectShape {
       childIsInTheForeground: childIsInTheForeground,
       alignment: alignment,
       paintStyle: paintStyle,
-      // inkWell: inkWell,
+      fit: fit,
       child: child,
     );
     final c = expandImage
@@ -206,9 +213,12 @@ class RRectangle extends _BaseSingleChildRenderObjectShape {
             shrinkToClippedSize: false,
             paintStyle: null,
             color: Colors.transparent,
+            fit: BoxFit.none,
             child: SizedBox(
-              width: shouldExpand ? (child as Image).width : null,
+              width:
+                  shouldExpand && expandImage ? (child as Image).width : null,
               child: FittedBox(
+                // fit: fit,
                 child: widget,
               ),
             ),
@@ -222,23 +232,28 @@ class RRectangle extends _BaseSingleChildRenderObjectShape {
         shrinkToClippedSize: false,
         paintStyle: null,
         color: Colors.transparent,
+        fit: BoxFit.none,
         child: MyStack(
           children: [
             c,
-            RRectangle._(
-              key: key,
-              color: Colors.transparent,
-              width: width,
-              height: height,
-              radius: borderRadius,
-              outerVRadius: outerVBorderRadius,
-              outerHRadius: outerHBorderRadius,
-              shouldExpand: false,
-              clipBehavior: Clip.antiAlias,
-              shrinkToClippedSize: shrinkToClippedSize,
-              paintStyle: paintStyle,
-              child: _wrapWithInkWell(inkWell),
-            )
+            Align(
+              alignment: alignment,
+              child: RRectangle._(
+                key: key,
+                color: Colors.transparent,
+                width: width,
+                height: height,
+                radius: borderRadius,
+                outerVRadius: outerVBorderRadius,
+                outerHRadius: outerHBorderRadius,
+                shouldExpand: false,
+                clipBehavior: Clip.antiAlias,
+                shrinkToClippedSize: shrinkToClippedSize,
+                paintStyle: paintStyle,
+                fit: BoxFit.none,
+                child: _wrapWithInkWell(inkWell),
+              ),
+            ),
           ],
         ),
       );

@@ -16,7 +16,7 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
     super.alignment = Alignment.center,
     required super.paintStyle,
     super.isConstraintTransparent = false,
-    super.inkWell,
+    required super.fit,
     super.key,
   });
 
@@ -39,6 +39,7 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
     Clip clipBehavior = Clip.none,
     bool shrinkToClippedSize = true,
     InkWell? inkWell,
+    BoxFit fit = BoxFit.none,
     Key? key,
   }) {
     final expandImage = shouldExpandImage(child, side, side);
@@ -56,7 +57,7 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
       childIsInTheForeground: childIsInTheForeground,
       alignment: alignment,
       paintStyle: paintStyle,
-      // inkWell: inkWell,
+      fit: fit,
       child: child,
     );
 
@@ -81,6 +82,8 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
             shouldExpand: false,
             clipBehavior: Clip.antiAlias,
             paintStyle: paintStyle,
+            fit: BoxFit.none,
+            alignment: alignment,
             child: _wrapWithInkWell(inkWell),
           )
         ],
@@ -173,6 +176,7 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
     Clip clipBehavior = Clip.none,
     bool shrinkToClippedSize = true,
     InkWell? inkWell,
+    BoxFit fit = BoxFit.none,
     Key? key,
   }) {
     final expandImage = shouldExpandImage(child, width, height);
@@ -189,7 +193,7 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
       childIsInTheForeground: childIsInTheForeground,
       alignment: alignment,
       paintStyle: paintStyle,
-      // inkWell: inkWell,
+      fit: fit,
       child: child,
     );
 
@@ -200,6 +204,7 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
             shrinkToClippedSize: false,
             paintStyle: null,
             color: Colors.transparent,
+            fit: BoxFit.none,
             child: SizedBox(
               width: shouldExpand ? (child as Image).width : null,
               child: FittedBox(
@@ -216,6 +221,7 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
         shrinkToClippedSize: false,
         paintStyle: null,
         color: Colors.transparent,
+        fit: BoxFit.none,
         child: MyStack(
           children: [
             c,
@@ -226,6 +232,8 @@ class Rectangle extends _BaseSingleChildRenderObjectShape {
               height: height,
               shouldExpand: false,
               paintStyle: paintStyle,
+              fit: BoxFit.none,
+              alignment: alignment,
               child: _wrapWithInkWell(inkWell),
             )
           ],

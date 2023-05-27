@@ -1,16 +1,18 @@
 part of 'base_render_shape.dart';
 
 class _ShapeBuilderWithInkWell extends ShapeBuilder {
-  _ShapeBuilderWithInkWell(
-      {required super.color,
-      required super.alignment,
-      required super.child,
-      required super.shadow,
-      required super.clipBehavior,
-      required super.shrinkToClippedSize,
-      required super.childIsInTheForeground,
-      required super.shouldExpand,
-      required super.paintStyle});
+  _ShapeBuilderWithInkWell({
+    required super.color,
+    required super.alignment,
+    required super.child,
+    required super.shadow,
+    required super.clipBehavior,
+    required super.shrinkToClippedSize,
+    required super.childIsInTheForeground,
+    required super.shouldExpand,
+    required super.paintStyle,
+    required super.fit,
+  });
 
   ShapeBuilder inkWell(InkWell inkWell) {
     _inkWell = inkWell;
@@ -20,6 +22,7 @@ class _ShapeBuilderWithInkWell extends ShapeBuilder {
 
 class ShapeBuilder {
   final Color? color;
+  final BoxFit fit;
   final AlignmentGeometry alignment;
   final Widget child;
   final List<BoxShadow> shadow;
@@ -38,12 +41,16 @@ class ShapeBuilder {
     required this.childIsInTheForeground,
     required this.shouldExpand,
     required this.paintStyle,
+    required this.fit,
   });
 
   InkWell? _inkWell;
 
   /// Build a Widget
   Widget build(Widget widget) {
+    if (fit != BoxFit.none) {
+      // TODO
+    }
     var firstChild = childIsInTheForeground ? widget : child;
     var secondChild = !childIsInTheForeground ? widget : child;
     if (_inkWell != null) {
@@ -89,6 +96,7 @@ class ShapeBuilder {
       alignment: alignment,
       paintStyle: paintStyle,
       inkWell: _inkWell,
+      fit: fit,
       child: child,
     );
   }
@@ -105,6 +113,7 @@ class ShapeBuilder {
       childIsInTheForeground: childIsInTheForeground,
       paintStyle: paintStyle,
       inkWell: _inkWell,
+      fit: fit,
       child: child,
     );
   }
@@ -130,6 +139,7 @@ class ShapeBuilder {
       childIsInTheForeground: childIsInTheForeground,
       paintStyle: paintStyle,
       inkWell: _inkWell,
+      fit: fit,
       child: child,
     );
   }
@@ -154,6 +164,7 @@ class ShapeBuilder {
       childIsInTheForeground: childIsInTheForeground,
       paintStyle: paintStyle,
       inkWell: _inkWell,
+      fit: fit,
       child: child,
     );
   }
@@ -171,6 +182,7 @@ class ShapeBuilder {
       childIsInTheForeground: childIsInTheForeground,
       paintStyle: paintStyle,
       inkWell: _inkWell,
+      fit: fit,
       child: child,
     );
   }
@@ -197,6 +209,7 @@ class ShapeBuilder {
       childIsInTheForeground: childIsInTheForeground,
       paintStyle: paintStyle,
       inkWell: _inkWell,
+      fit: fit,
       child: child,
     );
   }
@@ -221,6 +234,7 @@ class ShapeBuilder {
       childIsInTheForeground: childIsInTheForeground,
       paintStyle: paintStyle,
       inkWell: _inkWell,
+      fit: fit,
       child: child,
     );
   }
@@ -239,6 +253,7 @@ extension ShapeBuilderX on Widget {
     bool shrinkToClippedSize = true,
     bool shouldExpand = false,
     PaintStyle? paintStyle,
+    BoxFit fit = BoxFit.none,
   }) {
     return _ShapeBuilderWithInkWell(
       shadow: boxShadow,
@@ -250,6 +265,7 @@ extension ShapeBuilderX on Widget {
       shouldExpand: shouldExpand,
       paintStyle: paintStyle,
       childIsInTheForeground: true,
+      fit: fit,
     );
   }
 
@@ -267,6 +283,7 @@ extension ShapeBuilderX on Widget {
     bool shrinkToClippedSize = true,
     bool shouldExpand = false,
     PaintStyle? paintStyle,
+    BoxFit fit = BoxFit.none,
   }) {
     return _ShapeBuilderWithInkWell(
       shadow: boxShadow,
@@ -278,6 +295,7 @@ extension ShapeBuilderX on Widget {
       shouldExpand: shouldExpand,
       childIsInTheForeground: false,
       paintStyle: paintStyle,
+      fit: fit,
     );
   }
 
@@ -291,7 +309,7 @@ extension ShapeBuilderX on Widget {
         child: this,
       );
 
-  _Padding get padding => _Padding(child: this);
+  _Padding get paddingInsets => _Padding(child: this);
   _PaddingDirectional get paddingDirectional =>
       _PaddingDirectional(child: this);
 }

@@ -54,7 +54,7 @@ class Oval extends _BaseSingleChildRenderObjectShape {
     required super.paintStyle,
     required this.shouldClosePath,
     super.isConstraintTransparent = false,
-    super.inkWell,
+    required super.fit,
     super.key,
   });
 
@@ -75,6 +75,7 @@ class Oval extends _BaseSingleChildRenderObjectShape {
     bool childIsInTheForeground = true,
     PaintStyle? paintStyle,
     InkWell? inkWell,
+    BoxFit fit = BoxFit.none,
     Key? key,
   }) {
     final expandImage = shouldExpandImage(child, width, height);
@@ -95,7 +96,7 @@ class Oval extends _BaseSingleChildRenderObjectShape {
       shrinkToClippedSize: shrinkToClippedSize,
       childIsInTheForeground: childIsInTheForeground,
       alignment: alignment, paintStyle: paintStyle,
-      // inkWell: inkWell,
+      fit: fit,
       child: child,
     );
 
@@ -107,6 +108,7 @@ class Oval extends _BaseSingleChildRenderObjectShape {
             paintStyle: null,
             shouldClosePath: false,
             color: Colors.transparent,
+            fit: BoxFit.none,
             child: SizedBox(
               width: shouldExpand ? (child as Image).width : null,
               child: FittedBox(
@@ -125,6 +127,7 @@ class Oval extends _BaseSingleChildRenderObjectShape {
         paintStyle: null,
         shouldClosePath: false,
         color: Colors.transparent,
+        fit: BoxFit.none,
         child: MyStack(
           children: [
             c,
@@ -139,6 +142,8 @@ class Oval extends _BaseSingleChildRenderObjectShape {
               clipBehavior: Clip.antiAlias,
               shouldClosePath: shouldClosePathToCenter,
               paintStyle: paintStyle,
+              fit: BoxFit.none,
+              alignment: alignment,
               child: _wrapWithInkWell(inkWell),
             )
           ],
@@ -163,14 +168,17 @@ class Oval extends _BaseSingleChildRenderObjectShape {
     bool childIsInTheForeground = true,
     PaintStyle? paintStyle,
     InkWell? inkWell,
+    BoxFit fit = BoxFit.none,
     Key? key,
   }) {
+    radius = radius != null ? radius * 2 : null;
     final expandImage = shouldExpandImage(child, radius, radius);
+
     final widget = Oval._(
       key: key,
       color: color,
-      width: radius != null ? radius * 2 : null,
-      height: radius != null ? radius * 2 : null,
+      width: radius,
+      height: radius,
       squareSide: radius ?? -1,
       shouldExpand: expandImage ? false : shouldExpand,
       startAngle: startAngle,
@@ -182,7 +190,7 @@ class Oval extends _BaseSingleChildRenderObjectShape {
       childIsInTheForeground: childIsInTheForeground,
       alignment: alignment,
       paintStyle: paintStyle,
-      // inkWell: inkWell,
+      fit: fit,
       child: child,
     );
 
@@ -210,6 +218,8 @@ class Oval extends _BaseSingleChildRenderObjectShape {
             clipBehavior: Clip.antiAlias,
             shouldClosePath: shouldClosePathToCenter,
             paintStyle: paintStyle,
+            fit: BoxFit.none,
+            alignment: alignment,
             child: _wrapWithInkWell(inkWell),
           )
         ],

@@ -1,23 +1,17 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:shape_builder/shape_builder.dart';
-import 'package:shape_builder/src/paint_style.dart';
-
-import 'gradient_color.dart';
-import 'stack_render_shape.dart';
 
 part 'base_single_child_render_shape.dart';
+part 'colorize.dart';
 part 'oval.dart';
 part 'rectangle.dart';
 part 'rounded_rectangle.dart';
 part 'shape_builder.dart';
-part 'colorize.dart';
 
 abstract class _BaseRenderShape extends RenderAligningShiftedBox {
   _BaseRenderShape({

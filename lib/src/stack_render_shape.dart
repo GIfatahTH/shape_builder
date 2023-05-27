@@ -27,7 +27,7 @@ class _RenderStack extends RenderBox
     }
     _alignment = value;
     _resolvedAlignment = null;
-    markNeedsPaint();
+    markNeedsLayout();
   }
 
   @override

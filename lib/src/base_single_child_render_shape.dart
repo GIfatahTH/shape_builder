@@ -116,7 +116,7 @@ class _BaseSingleChildRenderObjectShape extends SingleChildRenderObjectWidget {
   final Size? imageSize;
   final PaintStyle? paintStyle;
   final bool isConstraintTransparent;
-  final InkWell? inkWell;
+  final BoxFit fit;
   _BaseSingleChildRenderObjectShape({
     required this.color,
     required this.width,
@@ -132,7 +132,7 @@ class _BaseSingleChildRenderObjectShape extends SingleChildRenderObjectWidget {
     required Widget? child,
     required this.isConstraintTransparent,
     required super.key,
-    this.inkWell,
+    required this.fit,
   })  : imageSize = child is Image && clipBehavior != Clip.none
             ? Size((child).width ?? -1, child.height ?? -1)
             : null,
@@ -142,12 +142,23 @@ class _BaseSingleChildRenderObjectShape extends SingleChildRenderObjectWidget {
               : child is Image
                   ? _wrapWithImage(child, alignment)
                   : child != null
-                      ? Align(
-                          widthFactor: 1,
-                          heightFactor: 1,
-                          alignment: alignment,
-                          child: child,
-                        )
+                      ? fit != BoxFit.none
+                          ? SizedBox(
+                              width: width,
+                              height: height,
+                              child: FittedBox(
+                                fit: fit,
+                                alignment: alignment,
+                                clipBehavior: clipBehavior,
+                                child: child,
+                              ),
+                            )
+                          : Align(
+                              widthFactor: 1,
+                              heightFactor: 1,
+                              alignment: alignment,
+                              child: child,
+                            )
                       : const SizedBox.shrink(),
         );
 
