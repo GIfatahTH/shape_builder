@@ -1599,10 +1599,10 @@ void main() {
   testGoldens(
     '30- inkWell',
     (tester) async {
-      final file = File(
-        path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
-      );
-      final data = file.readAsBytesSync();
+      // final file = File(
+      //   path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
+      // );
+      // final data = file.readAsBytesSync();
       dynamic message;
       await tester.pumpWidgetBuilder(
         Center(

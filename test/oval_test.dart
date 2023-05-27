@@ -1326,10 +1326,10 @@ void main() {
       testGoldens(
         '25- test start and swipe angles',
         (tester) async {
-          final file = File(
-            path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
-          );
-          final data = file.readAsBytesSync();
+          // final file = File(
+          //   path.join(Directory.current.path, 'test', 'flutter_logo_image.png'),
+          // );
+          // final data = file.readAsBytesSync();
           await tester.pumpWidgetBuilder(
             Center(
               child: Column(
